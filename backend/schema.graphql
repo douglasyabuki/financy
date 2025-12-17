@@ -35,6 +35,7 @@ type LoginOutput {
 type Mutation {
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
+  updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
@@ -68,10 +69,14 @@ type TransactionModel {
   userId: String!
 }
 
-"""User role in the system"""
+"""Type of transaction (income/expense)"""
 enum TransactionType {
   expense
   income
+}
+
+input UpdateUserInput {
+  name: String
 }
 
 type UserModel {
