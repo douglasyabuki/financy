@@ -3,8 +3,25 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type BalanceSummary {
+  balance: String!
+  monthExpense: String!
+  monthIncome: String!
+}
+
+"""Allowed colors for categories"""
+enum CategoryColor {
+  BLUE
+  GREEN
+  ORANGE
+  PINK
+  PURPLE
+  RED
+  YELLOW
+}
+
 type CategoryModel {
-  color: String!
+  color: CategoryColor!
   createdAt: DateTimeISO!
   description: String!
   icon: String!
@@ -14,6 +31,27 @@ type CategoryModel {
   updatedAt: DateTimeISO!
   user: UserModel
   userId: String!
+}
+
+type CategorySummary {
+  category: CategoryModel!
+  count: Int!
+  totalAmount: String!
+}
+
+input CreateCategoryInput {
+  color: CategoryColor!
+  description: String!
+  icon: String!
+  title: String!
+}
+
+input CreateTransactionInput {
+  amount: String!
+  date: String!
+  description: String!
+  title: String!
+  type: String!
 }
 
 """
@@ -33,13 +71,24 @@ type LoginOutput {
 }
 
 type Mutation {
+  createCategory(data: CreateCategoryInput!): CategoryModel!
+  createTransaction(categoryId: String!, data: CreateTransactionInput!): TransactionModel!
+  deleteCategory(id: String!): Boolean!
+  deleteTransaction(id: String!): TransactionModel!
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
+  updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
+  updateTransaction(data: UpdateTransactionInput!, id: String!): TransactionModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
+  balanceSummary: BalanceSummary!
+  categorySummary: [CategorySummary!]!
+  getCategory(id: String!): CategoryModel!
   getUser(id: String!): UserModel!
+  listCategories: [CategoryModel!]!
+  transactions: [TransactionModel!]!
 }
 
 input RegisterInput {
@@ -73,6 +122,21 @@ type TransactionModel {
 enum TransactionType {
   expense
   income
+}
+
+input UpdateCategoryInput {
+  color: CategoryColor
+  description: String
+  icon: String
+  title: String
+}
+
+input UpdateTransactionInput {
+  amount: String
+  date: String
+  description: String
+  title: String
+  type: String
 }
 
 input UpdateUserInput {

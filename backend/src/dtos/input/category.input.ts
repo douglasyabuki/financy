@@ -1,4 +1,5 @@
 import { Field, InputType } from 'type-graphql'
+import { CategoryColor } from '../../models/category.model'
 
 @InputType()
 export class CreateCategoryInput {
@@ -11,8 +12,8 @@ export class CreateCategoryInput {
   @Field(() => String)
   icon!: string
 
-  @Field(() => String)
-  color!: string
+  @Field(() => CategoryColor)
+  color!: CategoryColor
 }
 
 @InputType()
@@ -26,6 +27,6 @@ export class UpdateCategoryInput {
   @Field(() => String, { nullable: true })
   icon?: string
 
-  @Field(() => String, { nullable: true })
-  color?: string
+  @Field(() => CategoryColor, { nullable: true })
+  color?: CategoryColor
 }

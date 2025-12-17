@@ -3,10 +3,11 @@ import {
   CreateCategoryInput,
   UpdateCategoryInput,
 } from '../dtos/input/category.input'
+import { CategoryColor } from '../models/category.model'
 
 export class CategoryService {
   async createCategory(data: CreateCategoryInput, userId: string) {
-    return prismaClient.category.create({
+    const category = await prismaClient.category.create({
       data: {
         title: data.title,
         description: data.description,
@@ -15,6 +16,7 @@ export class CategoryService {
         userId,
       },
     })
+    return { ...category, color: category.color as CategoryColor }
   }
 
   async deleteCategory(id: string, userId: string) {
@@ -44,15 +46,19 @@ export class CategoryService {
     if (!category) throw new Error('Category not found')
     if (category.userId !== userId) throw new Error('Unauthorized')
 
-    return category
+    return { ...category, color: category.color as CategoryColor }
   }
 
   async listCategories(userId: string) {
-    return prismaClient.category.findMany({
+    const categories = await prismaClient.category.findMany({
       where: {
         userId,
       },
     })
+    return categories.map(category => ({
+      ...category,
+      color: category.color as CategoryColor,
+    }))
   }
 
   async updateCategory(id: string, data: UpdateCategoryInput, userId: string) {
@@ -65,7 +71,7 @@ export class CategoryService {
     if (!category) throw new Error('Category not found')
     if (category.userId !== userId) throw new Error('Unauthorized')
 
-    return prismaClient.category.update({
+    const updatedCategory = await prismaClient.category.update({
       where: {
         id,
       },
@@ -76,5 +82,6 @@ export class CategoryService {
         color: data.color,
       },
     })
+    return { ...updatedCategory, color: updatedCategory.color as CategoryColor }
   }
 }

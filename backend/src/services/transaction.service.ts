@@ -5,6 +5,7 @@ import {
   CreateTransactionInput,
   UpdateTransactionInput,
 } from '../dtos/input/transaction.input'
+import { CategoryColor } from '../models/category.model'
 
 export class TransactionService {
   async createTransaction(
@@ -66,8 +67,9 @@ export class TransactionService {
       const category = categories.find(c => c.id === agg.categoryId)
       if (!category) throw new Error(`Category ${agg.categoryId} not found`)
       return {
-        category,
+        category: { ...category, color: category.color as CategoryColor },
         count: agg._count.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         totalAmount: agg._sum.amount ?? new Decimal(0),
       }
     })
