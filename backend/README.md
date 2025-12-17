@@ -7,16 +7,16 @@ In this back-end project, you will build an API to manage personal finance organ
 > ⚠️
 > For this challenge, you are expected to use the SQLite database. If you prefer, you may use PostgreSQL as an alternative.
 
-- [ ] The user can create an account and log in
-- [ ] The user can view and manage only the transactions and categories created by them
-- [ ] It must be possible to create a transaction
-- [ ] It must be possible to delete a transaction
-- [ ] It must be possible to edit a transaction
-- [ ] It must be possible to list all transactions
-- [ ] It must be possible to create a category
-- [ ] It must be possible to delete a category
-- [ ] It must be possible to edit a category
-- [ ] It must be possible to list all categories
+- [x] The user can create an account and log in
+- [x] The user can view and manage only the transactions and categories created by them
+- [x] It must be possible to create a transaction
+- [x] It must be possible to delete a transaction
+- [x] It must be possible to edit a transaction
+- [x] It must be possible to list all transactions
+- [x] It must be possible to create a category
+- [x] It must be possible to delete a category
+- [x] It must be possible to edit a category
+- [x] It must be possible to list all categories
 
 > 💡
 > Tip: Copy the checklist above into your project’s README.
@@ -39,6 +39,9 @@ This project must include a `.env.example` file with the necessary keys:
 
 > - JWT_SECRET=
 > - DATABASE_URL=
+> - CORS_ORIGINS=
+> - PORT=
+> - NODE_ENV=
 
 If you add additional variables, remember to include them in the .env.example file.
 
