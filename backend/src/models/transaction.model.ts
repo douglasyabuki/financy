@@ -1,3 +1,4 @@
+import { TransactionType } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import {
   Field,
@@ -7,12 +8,11 @@ import {
   registerEnumType,
 } from 'type-graphql'
 import { CategoryModel } from './category.model'
-import { TransactionType } from './transaction-type.enum'
 import { UserModel } from './user.model'
 
 registerEnumType(TransactionType, {
   name: 'TransactionType',
-  description: 'User role in the system',
+  description: 'Type of transaction (income/expense)',
 })
 
 @ObjectType()
