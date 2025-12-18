@@ -174,10 +174,7 @@ export const Login = () => {
                     setRememberMe(checked as boolean)
                   }
                 />
-                <Label
-                  htmlFor="terms"
-                  className="tracking-0 text-sm leading-5 font-normal"
-                >
+                <Label htmlFor="terms" className="font-normal">
                   Lembrar-me
                 </Label>
               </div>
@@ -190,7 +187,9 @@ export const Login = () => {
             </div>
             <Button
               type="submit"
-              className="tracking-0 h-12 w-full text-base leading-6"
+              variant="custom-primary"
+              size="custom-md"
+              className="w-full"
               disabled={loading}
             >
               Entrar
@@ -204,15 +203,16 @@ export const Login = () => {
             <span className="h-px w-full bg-gray-300" />
           </span>
           <div className="flex flex-col gap-4">
-            <p className="tracking-0 text-center text-sm leading-5 font-normal">
+            <p className="tracking-0 text-center text-sm leading-5 font-normal text-gray-600">
               Ainda não tem uma conta?
             </p>
             <Link to="/signup">
               <Button
-                variant="outline"
-                className="tracking-0 h-12 w-full text-base leading-6 hover:bg-gray-200 hover:text-gray-700"
+                variant="custom-secondary"
+                size="custom-md"
+                className="w-full"
               >
-                <UserPlus className="size-4.5" />
+                <UserPlus />
                 Criar conta
               </Button>
             </Link>
