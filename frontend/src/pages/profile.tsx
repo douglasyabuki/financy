@@ -17,10 +17,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-interface ProfileForm {
-  name: string;
-}
-
 export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const { user, updateProfile, logout } = useAuthStore((state) => state);
@@ -29,13 +25,13 @@ export const Profile = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ProfileForm>({
+  } = useForm({
     defaultValues: {
       name: user?.name || "",
     },
   });
 
-  const onSubmit = async (data: ProfileForm) => {
+  const onSubmit = async (data: { name: string }) => {
     setLoading(true);
 
     try {
@@ -86,7 +82,7 @@ export const Profile = () => {
               <InputGroupInput
                 className="text-base leading-4.5 tracking-normal text-gray-800 placeholder:text-base placeholder:leading-4.5 placeholder:tracking-normal placeholder:text-gray-400"
                 id="name"
-                placeholder="Digite seu nome completo"
+                placeholder="Seu nome completo"
                 aria-invalid={!!errors.name}
                 {...register("name", {
                   required: "Nome é obrigatório",
@@ -146,7 +142,7 @@ export const Profile = () => {
             variant="custom-primary"
             size="custom-md"
             type="submit"
-            className="w-full"
+            className="mt-2 w-full"
             disabled={loading}
           >
             Salvar alterações

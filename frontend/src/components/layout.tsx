@@ -7,9 +7,11 @@ interface Layout {
 
 export const Layout = ({ children }: Layout) => {
   return (
-    <div className="bg-background flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="mx-auto p-12">{children}</main>
+      <main className="flex h-auto w-screen flex-1 items-start justify-center p-12">
+        {children}
+      </main>
       <Toaster />
     </div>
   );

@@ -18,7 +18,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth";
-import { Eye, EyeClosed, Mail, UserPlus } from "lucide-react";
+import { Eye, EyeClosed, Lock, Mail, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, NavLink } from "react-router-dom";
@@ -145,11 +145,19 @@ export const Login = () => {
                   {...register("password", {
                     required: "Senha é obrigatória",
                     minLength: {
-                      value: 6,
-                      message: "Senha deve ter pelo menos 6 caracteres",
+                      value: 8,
+                      message: "A senha deve ter no mínimo 8 caracteres",
                     },
                   })}
                 />
+                <InputGroupAddon>
+                  <Lock
+                    className={cn(
+                      "group-has-[[data-slot][aria-invalid=true]]/password:text-destructive",
+                      "group-has-active/password:text-primary group-has-focus/password:text-primary",
+                    )}
+                  />
+                </InputGroupAddon>
                 <InputGroupAddon align="inline-end">
                   <Button
                     type="button"
@@ -190,7 +198,7 @@ export const Login = () => {
               type="submit"
               variant="custom-primary"
               size="custom-md"
-              className="w-full"
+              className="mt-2 w-full"
               disabled={loading}
             >
               Entrar
@@ -207,7 +215,7 @@ export const Login = () => {
             <p className="tracking-0 text-center text-sm leading-5 font-normal text-gray-600">
               Ainda não tem uma conta?
             </p>
-            <Link to="/signup">
+            <Link to="/register">
               <Button
                 variant="custom-secondary"
                 size="custom-md"
