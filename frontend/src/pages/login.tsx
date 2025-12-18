@@ -120,7 +120,7 @@ export const Login = () => {
                 </InputGroupAddon>
               </InputGroup>
               {errors.email && (
-                <InputGroupText className="tracking-0 text-destructive text-xs leading-4">
+                <InputGroupText>
                   {errors.email.message as string}
                 </InputGroupText>
               )}
@@ -161,7 +161,7 @@ export const Login = () => {
                 </InputGroupAddon>
               </InputGroup>
               {errors.password && (
-                <InputGroupText className="tracking-0 text-destructive text-xs leading-4">
+                <InputGroupText>
                   {errors.password.message as string}
                 </InputGroupText>
               )}
