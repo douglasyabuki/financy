@@ -1,7 +1,13 @@
 import { apolloClient } from "@/lib/graphql/apollo";
 import { LOGIN } from "@/lib/graphql/mutations/login";
 import { REGISTER } from "@/lib/graphql/mutations/register";
-import type { LoginInput, RegisterInput, User } from "@/types";
+import { UPDATE_PROFILE } from "@/lib/graphql/mutations/update-profile";
+import type {
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+  User,
+} from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -21,12 +27,19 @@ type LoginMutationData = {
   };
 };
 
+type UpdateProfileMutationData = {
+  updateProfile: {
+    user: User;
+  };
+};
+
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   signup: (data: RegisterInput) => Promise<boolean>;
   login: (data: LoginInput) => Promise<boolean>;
+  updateProfile: (data: UpdateProfileInput) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -105,6 +118,38 @@ export const useAuthStore = create<AuthState>()(
           return false;
         } catch (error) {
           console.log("Error signing up");
+          throw error;
+        }
+      },
+      updateProfile: async (profileData: UpdateProfileInput) => {
+        try {
+          const { data } = await apolloClient.mutate<
+            UpdateProfileMutationData,
+            { data: { name: string } }
+          >({
+            mutation: UPDATE_PROFILE,
+            variables: {
+              data: {
+                name: profileData.name,
+              },
+            },
+          });
+          if (data?.updateProfile) {
+            const { user } = data.updateProfile;
+            set((state) => ({
+              user: state.user
+                ? {
+                    ...state.user,
+                    name: user.name,
+                    updatedAt: user.updatedAt,
+                  }
+                : null,
+            }));
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.log("Error updating profile");
           throw error;
         }
       },

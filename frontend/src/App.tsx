@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/layout";
 import { Login } from "./pages/login";
+import { Profile } from "./pages/profile";
 import { useAuthStore } from "./stores/auth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -56,7 +57,7 @@ export const App = () => {
           path="/profile"
           element={
             <ProtectedRoute>
-              <>Perfil</>
+              <Profile />
             </ProtectedRoute>
           }
         />
