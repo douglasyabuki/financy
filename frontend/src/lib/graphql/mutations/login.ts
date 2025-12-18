@@ -9,7 +9,6 @@ export const LOGIN = gql`
         id
         name
         email
-        role
         createdAt
         updatedAt
       }
