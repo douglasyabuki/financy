@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Divider } from "@/components/ui/divider";
 import {
   InputGroup,
   InputGroupAddon,
@@ -196,11 +197,11 @@ export const Login = () => {
             </Button>
           </form>
           <span className="flex items-center">
-            <span className="h-px w-full bg-gray-300" />
+            <Divider variant="darker" />
             <p className="tracking-0 px-3 text-sm leading-5 font-normal text-gray-500">
               ou
             </p>
-            <span className="h-px w-full bg-gray-300" />
+            <Divider variant="darker" />
           </span>
           <div className="flex flex-col gap-4">
             <p className="tracking-0 text-center text-sm leading-5 font-normal text-gray-600">
