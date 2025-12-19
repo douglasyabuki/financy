@@ -1,26 +1,29 @@
+import type { CategoryColor } from "@/constants/categories";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+type TagColor = CategoryColor | "GRAY";
+
+const color: Record<TagColor, string> = {
+  GRAY: "bg-gray-200 text-gray-700",
+  GREEN: "bg-green-light text-green-dark",
+  BLUE: "bg-blue-light text-blue-dark",
+  PURPLE: "bg-purple-light text-purple-dark",
+  PINK: "bg-pink-light text-pink-dark",
+  ORANGE: "bg-orange-light text-orange-dark",
+  RED: "bg-red-light text-red-dark",
+  YELLOW: "bg-yellow-light text-yellow-dark",
+};
+
 const tagVariants = cva(
   "inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-sm tracking-0 font-medium leading-5 pointer-events-none select-none",
   {
-    variants: {
-      color: {
-        gray: "bg-gray-200 text-gray-700",
-        blue: "bg-blue-light text-blue-dark",
-        purple: "bg-purple-light text-purple-dark",
-        pink: "bg-pink-light text-pink-dark",
-        red: "bg-red-light text-red-dark",
-        orange: "bg-orange-light text-orange-dark",
-        yellow: "bg-yellow-light text-yellow-dark",
-        green: "bg-green-light text-green-dark",
-      },
-    },
+    variants: { color },
     defaultVariants: {
-      color: "gray",
+      color: "GRAY",
     },
   },
 );
