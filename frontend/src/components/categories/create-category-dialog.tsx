@@ -145,15 +145,7 @@ export const CreateCategoryDialog = ({
                 type="description"
                 placeholder="Descrição da categoria"
                 autoComplete="description"
-                {...register("description", {
-                  required: "Descrição é obrigatória",
-                  minLength: {
-                    value: 3,
-                    message: "Descrição deve ter no mínimo 3 caracteres",
-                  },
-                  validate: (value) =>
-                    value.trim().length > 0 || "Descrição não pode ser vazio",
-                })}
+                {...register("description")}
               />
             </InputGroup>
             <InputGroupText>Opcional</InputGroupText>
@@ -165,7 +157,6 @@ export const CreateCategoryDialog = ({
             >
               Ícone
             </Label>
-
             <Controller
               control={control}
               name="icon"
