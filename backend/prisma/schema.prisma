@@ -50,7 +50,7 @@ model Transaction {
 model Category {
   id          String   @id @default(uuid())
   title       String
-  description String
+  description String?
   icon        String
   color       String
   createdAt   DateTime @default(now())

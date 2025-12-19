@@ -41,7 +41,7 @@ type CategorySummary {
 
 input CreateCategoryInput {
   color: CategoryColor!
-  description: String!
+  description: String
   icon: String!
   title: String!
 }

@@ -6,8 +6,8 @@ export class CreateCategoryInput {
   @Field(() => String)
   title!: string
 
-  @Field(() => String)
-  description!: string
+  @Field(() => String, { nullable: true })
+  description?: string
 
   @Field(() => String)
   icon!: string

@@ -18,9 +18,33 @@ export enum CategoryColor {
   YELLOW = 'yellow',
 }
 
+export enum CategoryIcon {
+  BRIEFCASE_BUSINESS = 'BriefcaseBusiness',
+  CAR_FRONT = 'CarFront',
+  HEART_PULSE = 'HeartPulse',
+  PIGGY_BANK = 'PiggyBank',
+  SHOPPING_CART = 'ShoppingCart',
+  TICKET = 'Ticket',
+  TOOL_CASE = 'ToolCase',
+  UTENSILS = 'Utensils',
+  PAW_PRINT = 'PawPrint',
+  HOUSE = 'House',
+  GIFT = 'Gift',
+  DUMBBELL = 'Dumbbell',
+  BOOK_OPEN = 'BookOpen',
+  BAGGAGE_CLAIM = 'BaggageClaim',
+  MAILBOX = 'Mailbox',
+  RECEIPT_TEXT = 'ReceiptText',
+}
+
 registerEnumType(CategoryColor, {
   name: 'CategoryColor',
   description: 'Allowed colors for categories',
+})
+
+registerEnumType(CategoryIcon, {
+  name: 'CategoryIcon',
+  description: 'Allowed icons for categories',
 })
 
 @ObjectType()
@@ -32,7 +56,7 @@ export class CategoryModel {
   title!: string
 
   @Field(() => String)
-  description!: string
+  description?: string
 
   @Field(() => String)
   icon!: string
