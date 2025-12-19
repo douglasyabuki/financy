@@ -82,4 +82,15 @@ export class CategoryResolver {
       user.id
     )
   }
+
+  @FieldResolver(() => Number)
+  async transactionCount(
+    @Root() category: CategoryModel,
+    @GraphqlUser() user: User
+  ): Promise<number> {
+    return this.transactionService.countTransactionsByCategory(
+      category.id,
+      user.id
+    )
+  }
 }

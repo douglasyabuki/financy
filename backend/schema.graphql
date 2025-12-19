@@ -27,6 +27,7 @@ type CategoryModel {
   icon: String!
   id: ID!
   title: String!
+  transactionCount: Float!
   transactions: [TransactionModel!]
   updatedAt: DateTimeISO!
   user: UserModel

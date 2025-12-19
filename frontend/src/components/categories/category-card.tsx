@@ -52,8 +52,8 @@ export const CategoryCard = ({
       <CardFooter className="items-center justify-between p-0">
         <Tag color={category.color}>{category.title}</Tag>
         <p className="text-sm leading-5 font-normal tracking-normal text-gray-600">
-          {category.transactions.length}{" "}
-          {category.transactions.length === 1 ? "item" : "itens"}
+          {category.transactionCount}{" "}
+          {category.transactionCount === 1 ? "item" : "itens"}
         </p>
       </CardFooter>
     </Card>
