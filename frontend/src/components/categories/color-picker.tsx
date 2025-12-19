@@ -1,4 +1,4 @@
-import { categoryColors, type CategoryColor } from "@/constants/categories";
+import type { CategoryColor } from "@/constants/categories";
 import { cn } from "@/lib/utils";
 
 interface ColorButton {
@@ -12,6 +12,16 @@ interface ColorPicker {
   onColorChange: (color: CategoryColor) => void;
 }
 
+const categoryVariants: Record<CategoryColor, string> = {
+  GREEN: "bg-green-base",
+  BLUE: "bg-blue-base",
+  PURPLE: "bg-purple-base",
+  PINK: "bg-pink-base",
+  ORANGE: "bg-orange-base",
+  RED: "bg-red-base",
+  YELLOW: "bg-yellow-base",
+};
+
 const ColorButton = ({ color, isSelected, onClick }: ColorButton) => {
   return (
     <button
@@ -22,7 +32,9 @@ const ColorButton = ({ color, isSelected, onClick }: ColorButton) => {
       )}
       onClick={onClick}
     >
-      <span className={cn("h-full w-full rounded-xs", categoryColors[color])} />
+      <span
+        className={cn("h-full w-full rounded-xs", categoryVariants[color])}
+      />
     </button>
   );
 };
@@ -30,7 +42,7 @@ const ColorButton = ({ color, isSelected, onClick }: ColorButton) => {
 export const ColorPicker = ({ color, onColorChange }: ColorPicker) => {
   return (
     <div className="flex items-center gap-2">
-      {Object.keys(categoryColors).map((key) => (
+      {Object.keys(categoryVariants).map((key) => (
         <ColorButton
           key={key}
           color={key as CategoryColor}

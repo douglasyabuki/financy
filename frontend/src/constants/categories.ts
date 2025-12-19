@@ -18,15 +18,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export const categoryColors = {
-  GREEN: "bg-green-base",
-  BLUE: "bg-blue-base",
-  PURPLE: "bg-purple-base",
-  PINK: "bg-pink-base",
-  ORANGE: "bg-orange-base",
-  RED: "bg-red-base",
-  YELLOW: "bg-yellow-base",
-};
+export type CategoryColor =
+  | "GREEN"
+  | "BLUE"
+  | "PURPLE"
+  | "PINK"
+  | "ORANGE"
+  | "RED"
+  | "YELLOW";
 
 export const CategoryIcons: Record<string, LucideIcon> = {
   BRIEFCASE_BUSINESS: BriefcaseBusiness,
@@ -46,7 +45,5 @@ export const CategoryIcons: Record<string, LucideIcon> = {
   MAILBOX: Mailbox,
   RECEIPT_TEXT: ReceiptText,
 };
-
-export type CategoryColor = keyof typeof categoryColors;
 
 export type CategoryIcon = keyof typeof CategoryIcons;
