@@ -1,3 +1,5 @@
+import type { CategoryColor, CategoryIcon } from "@/constants/categories";
+
 export interface User {
   id: string;
   name: string;
@@ -22,3 +24,25 @@ export interface UpdateProfileInput {
 }
 
 export type TransactionType = "income" | "expense";
+
+export interface Category {
+  id: string;
+  title: string;
+  description?: string | null;
+  userId: string;
+  transactions: Partial<Transaction>[];
+  icon: CategoryIcon;
+  color: CategoryColor;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface Transaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: TransactionType;
+  categoryId: string;
+  createdAt: string;
+  updatedAt?: string;
+}
