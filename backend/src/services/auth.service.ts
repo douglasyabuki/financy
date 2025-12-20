@@ -2,7 +2,7 @@ import { prismaClient } from '../../prisma/prisma'
 import { LoginInput, RegisterInput } from '../dtos/input/auth.input'
 import { User } from '../generated/prisma/browser'
 import { comparePassword, hashPassword } from '../utils/hash'
-import { signJwt } from '../utils/jwt'
+import { signJwt, verifyJwt } from '../utils/jwt'
 
 export class AuthService {
   async login(data: LoginInput) {
@@ -64,6 +64,33 @@ export class AuthService {
       token,
       refreshToken,
       user,
+    }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = verifyJwt(refreshToken)
+      const user = await prismaClient.user.findUnique({
+        where: { id: payload.id },
+      })
+
+      if (!user) throw new Error('User not found')
+
+      const token = signJwt(
+        {
+          id: user.id,
+          email: user.email,
+        },
+        '15m'
+      )
+
+      return {
+        token,
+        refreshToken,
+        user,
+      }
+    } catch (e) {
+      throw new Error('Invalid refresh token')
     }
   }
 }

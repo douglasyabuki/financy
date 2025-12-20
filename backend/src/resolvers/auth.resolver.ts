@@ -1,5 +1,9 @@
 import { Arg, Mutation, Resolver } from 'type-graphql'
-import { LoginInput, RegisterInput } from '../dtos/input/auth.input'
+import {
+  LoginInput,
+  RefreshTokenInput,
+  RegisterInput,
+} from '../dtos/input/auth.input'
 import { LoginOutput, RegisterOutput } from '../dtos/output/auth.output'
 import { AuthService } from '../services/auth.service'
 
@@ -19,5 +23,12 @@ export class AuthResolver {
     @Arg('data', () => RegisterInput) data: RegisterInput
   ): Promise<RegisterOutput> {
     return this.authService.register(data)
+  }
+
+  @Mutation(() => LoginOutput)
+  async refreshToken(
+    @Arg('data', () => RefreshTokenInput) data: RefreshTokenInput
+  ): Promise<LoginOutput> {
+    return this.authService.refreshToken(data.refreshToken)
   }
 }

@@ -77,6 +77,7 @@ type Mutation {
   deleteCategory(id: String!): Boolean!
   deleteTransaction(id: String!): TransactionModel!
   login(data: LoginInput!): LoginOutput!
+  refreshToken(data: RefreshTokenInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
   updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
   updateProfile(data: UpdateUserInput!): UpdateProfileOutput!
@@ -91,6 +92,10 @@ type Query {
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
   transactions: [TransactionModel!]!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
 }
 
 input RegisterInput {
