@@ -59,13 +59,15 @@ async function bootstrap() {
     })
   )
 
+  const port = env.PORT
+
   app.listen(
     {
-      port: 4000,
+      port,
     },
     () => {
-      console.log('🚀 Server initialized on port 4000')
-      console.log('Graphql server running at http://localhost:4000/graphql')
+      console.log(`🚀 Server initialized on port ${port}`)
+      console.log(`Graphql server running at http://localhost:${port}/graphql`)
     }
   )
 }
