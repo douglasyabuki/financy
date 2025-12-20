@@ -40,10 +40,24 @@ export interface Category {
 
 export interface Transaction {
   id: string;
-  title: string;
+  description: string;
   amount: number;
   type: TransactionType;
   categoryId: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface CreateTransactionInput {
+  description: string;
+  type: TransactionType;
+  amount: string;
+  date: string;
+}
+
+export interface UpdateTransactionInput {
+  description?: string;
+  type?: TransactionType;
+  amount?: string;
+  date?: string;
 }

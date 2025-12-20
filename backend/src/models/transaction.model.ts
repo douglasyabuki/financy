@@ -21,10 +21,7 @@ export class TransactionModel {
   id!: string
 
   @Field(() => String)
-  title!: string
-
-  @Field(() => String)
-  description?: string
+  description!: string
 
   @Field(() => String)
   amount!: Decimal

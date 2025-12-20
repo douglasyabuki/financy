@@ -51,7 +51,6 @@ input CreateTransactionInput {
   amount: String!
   date: String!
   description: String!
-  title: String!
   type: String!
 }
 
@@ -118,7 +117,6 @@ type TransactionModel {
   date: DateTimeISO!
   description: String!
   id: ID!
-  title: String!
   type: TransactionType!
   updatedAt: DateTimeISO!
   user: UserModel
@@ -146,7 +144,6 @@ input UpdateTransactionInput {
   amount: String
   date: String
   description: String
-  title: String
   type: String
 }
 

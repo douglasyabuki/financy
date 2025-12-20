@@ -3,9 +3,6 @@ import { Field, InputType } from 'type-graphql'
 @InputType()
 export class CreateTransactionInput {
   @Field(() => String)
-  title!: string
-
-  @Field(() => String)
   description!: string
 
   @Field(() => String)
@@ -20,9 +17,6 @@ export class CreateTransactionInput {
 
 @InputType()
 export class UpdateTransactionInput {
-  @Field(() => String, { nullable: true })
-  title?: string
-
   @Field(() => String, { nullable: true })
   description?: string
 

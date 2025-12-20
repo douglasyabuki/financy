@@ -16,7 +16,6 @@ export class TransactionService {
   ) {
     return prismaClient.transaction.create({
       data: {
-        title: data.title,
         description: data.description,
         type,
         amount: data.amount,
@@ -165,7 +164,6 @@ export class TransactionService {
         id,
       },
       data: {
-        title: data.title,
         description: data.description,
         type,
         amount: data.amount,
