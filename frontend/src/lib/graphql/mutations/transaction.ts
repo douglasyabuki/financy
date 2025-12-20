@@ -7,7 +7,6 @@ export const CREATE_TRANSACTION = gql`
   ) {
     createTransaction(data: $data, categoryId: $categoryId) {
       id
-      title
       description
       amount
       type
@@ -34,7 +33,6 @@ export const UPDATE_TRANSACTION = gql`
   mutation UpdateTransaction($id: String!, $data: UpdateTransactionInput!) {
     updateTransaction(id: $id, data: $data) {
       id
-      title
       description
       amount
       type

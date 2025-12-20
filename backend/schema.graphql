@@ -90,7 +90,7 @@ type Query {
   getCategory(id: String!): CategoryModel!
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
-  transactions: [TransactionModel!]!
+  listTransactions: [TransactionModel!]!
 }
 
 input RefreshTokenInput {

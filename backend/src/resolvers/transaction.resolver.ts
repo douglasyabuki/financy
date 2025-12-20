@@ -64,7 +64,9 @@ export class TransactionResolver {
   }
 
   @Query(() => [TransactionModel])
-  async transactions(@GraphqlUser() user: User): Promise<TransactionModel[]> {
+  async listTransactions(
+    @GraphqlUser() user: User
+  ): Promise<TransactionModel[]> {
     return this.transactionService.listTransactions(user.id)
   }
 
