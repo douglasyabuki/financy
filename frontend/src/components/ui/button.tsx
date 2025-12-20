@@ -15,6 +15,10 @@ const buttonVariants = cva(
           "bg-white text-gray-700 hover:bg-gray-200 [&_svg:not([class*='text-'])]:text-gray-700 border border-gray-300",
         "custom-icon":
           "bg-white text-gray-700 hover:bg-gray-200 [&_svg:not([class*='text-'])]:text-gray-700 border border-gray-300",
+        "transaction-type-expense":
+          "bg-none text-gray-600 hover:bg-gray-200 [&_svg:not([class*='text-'])]:text-gray-400 border border-transparent aria-selected:bg-gray-100 aria-selected:border-red-base aria-selected:text-gray-800 aria-selected:[&_svg:not([class*='text-'])]:text-red-base",
+        "transaction-type-income":
+          "bg-none text-gray-600 hover:bg-gray-200 [&_svg:not([class*='text-'])]:text-gray-400 border border-transparent aria-selected:bg-gray-100 aria-selected:border-green-base aria-selected:text-gray-800 aria-selected:[&_svg:not([class*='text-'])]:text-green-base",
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
@@ -28,9 +32,11 @@ const buttonVariants = cva(
       },
       size: {
         "custom-md":
-          "tracking-0 gap-2 text-base leading-6 font-medium [&_svg:not([class*='size-'])]:size-4.5 h-12 py-3 px-4",
+          "tracking-normal gap-2 text-base leading-6 font-medium [&_svg:not([class*='size-'])]:size-4.5 h-12 py-3 px-4",
         "custom-sm":
-          "tracking-0 gap-2 px-3 py-2 text-sm leading-5 font-medium [&_svg:not([class*='size-'])]:size-4 h-9",
+          "tracking-normal gap-2 px-3 py-2 text-sm leading-5 font-medium [&_svg:not([class*='size-'])]:size-4 h-9",
+        "transaction-type":
+          "tracking-normal gap-3 px-4 py-3.5 h-11.5 text-base leading-4.5 [&_svg:not([class*='size-'])]:size-4",
         "custom-icon-sm": "size-8",
         "custom-icon-md":
           "size-[2.625rem] [&_svg:not([class*='size-'])]:size-5",
