@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -11,6 +12,7 @@ import { type CategoryColor, type CategoryIcon } from "@/constants/categories";
 import { CREATE_CATEGORY } from "@/lib/graphql/mutations/category";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@apollo/client/react";
+import { X } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -87,14 +89,19 @@ export const CreateCategoryDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-md gap-6">
-        <DialogHeader className="gap-0.5">
+      <DialogContent className="w-md gap-6" showCloseButton={false}>
+        <DialogHeader className="relative gap-0.5">
           <DialogTitle className="text-lg leading-6 font-semibold tracking-normal text-gray-800">
             Nova categoria
           </DialogTitle>
           <DialogDescription className="text-sm leading-5 font-normal tracking-normal text-gray-600">
             Organize suas transações com categorias
           </DialogDescription>
+          <DialogClose asChild className="absolute right-0">
+            <Button variant="custom-icon" size="custom-icon-sm" type="button">
+              <X />
+            </Button>
+          </DialogClose>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="group/title space-y-2">

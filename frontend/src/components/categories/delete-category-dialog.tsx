@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -49,8 +50,8 @@ export const DeleteCategoryDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader className="relative">
           <DialogTitle className="text-lg leading-6 font-semibold tracking-normal text-gray-800">
             Deletar categoria
           </DialogTitle>
@@ -63,9 +64,11 @@ export const DeleteCategoryDialog = ({
           <Tag color={category?.color}>{category?.title}</Tag>
         </div>
         <DialogFooter>
-          <Button variant="outline" size="custom-sm" onClick={onClose}>
-            Cancelar
-          </Button>
+          <DialogClose asChild>
+            <Button variant="outline" size="custom-sm">
+              Cancelar
+            </Button>
+          </DialogClose>
           <Button
             size="custom-sm"
             variant="destructive"
