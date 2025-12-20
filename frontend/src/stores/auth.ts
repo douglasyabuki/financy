@@ -1,5 +1,6 @@
 import { apolloClient } from "@/lib/graphql/apollo";
 import { LOGIN } from "@/lib/graphql/mutations/login";
+import { REFRESH_TOKEN } from "@/lib/graphql/mutations/refresh-token";
 import { REGISTER } from "@/lib/graphql/mutations/register";
 import { UPDATE_PROFILE } from "@/lib/graphql/mutations/update-profile";
 import type {
@@ -8,6 +9,8 @@ import type {
   UpdateProfileInput,
   User,
 } from "@/types";
+import { print } from "graphql";
+import { jwtDecode } from "jwt-decode";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -43,15 +46,67 @@ interface AuthState {
   updateProfile: (data: UpdateProfileInput) => Promise<boolean>;
   logout: () => void;
   setTokens: (token: string, refreshToken: string) => void;
+  checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      checkAuth: async () => {
+        const { token, refreshToken } = get();
+        if (!token || !refreshToken) return;
+
+        try {
+          const decoded: { exp: number } = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+
+          if (decoded.exp < currentTime) {
+            const response = await fetch("http://localhost:4000/graphql", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                query: print(REFRESH_TOKEN),
+                variables: {
+                  data: {
+                    refreshToken: refreshToken,
+                  },
+                },
+              }),
+            });
+
+            const { data, errors } = await response.json();
+
+            if (errors || !data?.refreshToken) {
+              set({
+                user: null,
+                token: null,
+                refreshToken: null,
+                isAuthenticated: false,
+              });
+              apolloClient.clearStore();
+              return;
+            }
+
+            const { token: newToken, refreshToken: newRefreshToken } =
+              data.refreshToken;
+            set({ token: newToken, refreshToken: newRefreshToken });
+          }
+        } catch (error) {
+          set({
+            user: null,
+            token: null,
+            refreshToken: null,
+            isAuthenticated: false,
+          });
+          apolloClient.clearStore();
+        }
+      },
       setTokens: (token: string, refreshToken: string) =>
         set({ token, refreshToken }),
       login: async (loginData: LoginInput) => {
