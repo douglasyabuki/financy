@@ -31,6 +31,7 @@ export interface Category {
   description?: string | null;
   userId: string;
   transactions: Partial<Transaction>[];
+  transactionCount: number;
   icon: CategoryIcon;
   color: CategoryColor;
   createdAt: string;
