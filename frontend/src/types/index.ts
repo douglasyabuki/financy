@@ -23,7 +23,7 @@ export interface UpdateProfileInput {
   name: string;
 }
 
-export type TransactionType = "income" | "expense";
+export type TransactionType = "INCOME" | "EXPENSE";
 
 export interface Category {
   id: string;
