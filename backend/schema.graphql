@@ -59,6 +59,14 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+input GetTransactionsFilterInput {
+  categoryId: String
+  description: String
+  month: Float
+  type: String
+  year: Float
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -84,13 +92,18 @@ type Mutation {
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
+type PaginatedTransactions {
+  items: [TransactionModel!]!
+  totalCount: Float!
+}
+
 type Query {
   balanceSummary: BalanceSummary!
   categorySummary: [CategorySummary!]!
   getCategory(id: String!): CategoryModel!
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
-  listTransactions: [TransactionModel!]!
+  listTransactions(filters: GetTransactionsFilterInput, limit: Float! = 10, offset: Float! = 0): PaginatedTransactions!
 }
 
 input RefreshTokenInput {

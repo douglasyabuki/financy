@@ -10,6 +10,7 @@ import {
 } from 'type-graphql'
 import {
   CreateTransactionInput,
+  GetTransactionsFilterInput,
   UpdateTransactionInput,
 } from '../dtos/input/transaction.input'
 import { BalanceSummary } from '../dtos/output/balance-summary.dto'
@@ -17,7 +18,10 @@ import { CategorySummary } from '../dtos/output/category-summary.dto'
 import { GraphqlUser } from '../graphql/decorators/user.decorator'
 import { IsAuthenticated } from '../middlewares/auth.middleware'
 import { CategoryModel } from '../models/category.model'
-import { TransactionModel } from '../models/transaction.model'
+import {
+  PaginatedTransactions,
+  TransactionModel,
+} from '../models/transaction.model'
 import { UserModel } from '../models/user.model'
 import { CategoryService } from '../services/category.service'
 import { TransactionService } from '../services/transaction.service'
@@ -63,11 +67,20 @@ export class TransactionResolver {
     return this.transactionService.deleteTransaction(id)
   }
 
-  @Query(() => [TransactionModel])
+  @Query(() => PaginatedTransactions)
   async listTransactions(
-    @GraphqlUser() user: User
-  ): Promise<TransactionModel[]> {
-    return this.transactionService.listTransactions(user.id)
+    @GraphqlUser() user: User,
+    @Arg('limit', () => Number, { defaultValue: 10 }) limit: number,
+    @Arg('offset', () => Number, { defaultValue: 0 }) offset: number,
+    @Arg('filters', () => GetTransactionsFilterInput, { nullable: true })
+    filters?: GetTransactionsFilterInput
+  ): Promise<PaginatedTransactions> {
+    return this.transactionService.listTransactions(
+      user.id,
+      limit,
+      offset,
+      filters
+    )
   }
 
   @Query(() => BalanceSummary)

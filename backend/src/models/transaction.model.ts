@@ -50,3 +50,12 @@ export class TransactionModel {
   @Field(() => CategoryModel, { nullable: true })
   category?: CategoryModel
 }
+
+@ObjectType()
+export class PaginatedTransactions {
+  @Field(() => [TransactionModel])
+  items!: TransactionModel[]
+
+  @Field(() => Number)
+  totalCount!: number
+}

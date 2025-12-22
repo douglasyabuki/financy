@@ -3,6 +3,7 @@ import { Decimal } from '@prisma/client/runtime/library'
 import { prismaClient } from '../../prisma/prisma'
 import {
   CreateTransactionInput,
+  GetTransactionsFilterInput,
   UpdateTransactionInput,
 } from '../dtos/input/transaction.input'
 import { CategoryColor } from '../models/category.model'
@@ -137,15 +138,56 @@ export class TransactionService {
     }
   }
 
-  async listTransactions(userId: string) {
-    return prismaClient.transaction.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        date: 'desc',
-      },
-    })
+  async listTransactions(
+    userId: string,
+    limit: number,
+    offset: number,
+    filters?: GetTransactionsFilterInput
+  ) {
+    const where: any = {
+      userId,
+    }
+
+    if (filters) {
+      if (filters.type) {
+        where.type = filters.type as TransactionType
+      }
+      if (filters.categoryId && filters.categoryId !== 'all') {
+        where.categoryId = filters.categoryId
+      }
+      if (filters.description) {
+        where.description = {
+          contains: filters.description,
+        }
+      }
+      if (filters.month && filters.year) {
+        const startOfMonth = new Date(filters.year, filters.month, 1)
+        const endOfMonth = new Date(filters.year, filters.month + 1, 0)
+        where.date = {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        }
+      }
+    }
+
+    const [items, totalCount] = await Promise.all([
+      prismaClient.transaction.findMany({
+        where,
+        take: limit,
+        skip: offset,
+        orderBy: {
+          date: 'desc',
+        },
+      }),
+      prismaClient.transaction.count({
+        where,
+      }),
+    ])
+
+    return {
+      items,
+      totalCount,
+    }
   }
 
   async updateTransaction(
