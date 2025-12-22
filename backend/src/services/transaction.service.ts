@@ -210,6 +210,7 @@ export class TransactionService {
         type,
         amount: data.amount,
         date: data.date,
+        categoryId: data.categoryId,
       },
     })
   }

@@ -155,6 +155,7 @@ type UpdateProfileOutput {
 
 input UpdateTransactionInput {
   amount: String
+  categoryId: String
   date: String
   description: String
   type: String

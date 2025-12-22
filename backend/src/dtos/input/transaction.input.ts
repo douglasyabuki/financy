@@ -28,6 +28,9 @@ export class UpdateTransactionInput {
 
   @Field(() => String, { nullable: true })
   date?: string
+
+  @Field(() => String, { nullable: true })
+  categoryId?: string
 }
 
 @InputType()
