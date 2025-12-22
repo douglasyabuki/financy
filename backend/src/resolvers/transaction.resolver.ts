@@ -44,7 +44,7 @@ export class TransactionResolver {
       data,
       user.id,
       categoryId,
-      data.type as TransactionType
+      data.type.toLowerCase() as TransactionType
     )
   }
 
@@ -56,7 +56,7 @@ export class TransactionResolver {
     return this.transactionService.updateTransaction(
       id,
       data,
-      data.type as TransactionType
+      data.type ? (data.type.toLowerCase() as TransactionType) : 'expense'
     )
   }
 

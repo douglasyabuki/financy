@@ -150,7 +150,7 @@ export class TransactionService {
 
     if (filters) {
       if (filters.type) {
-        where.type = filters.type as TransactionType
+        where.type = filters.type.toLowerCase() as TransactionType
       }
       if (filters.categoryId && filters.categoryId !== 'all') {
         where.categoryId = filters.categoryId
