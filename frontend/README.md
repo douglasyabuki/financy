@@ -6,20 +6,20 @@ In this front-end project, you will build a **React application** that works tog
 
 As with the API, the application must support the following features and rules:
 
-- [ ] Users can create an account and log in
-- [ ] Users can view and manage **only** their own transactions and categories
-- [ ] Users can create a transaction
-- [ ] Users can delete a transaction
-- [ ] Users can edit a transaction
-- [ ] Users can list all transactions
-- [ ] Users can create a category
-- [ ] Users can delete a category
-- [ ] Users can edit a category
-- [ ] Users can list all categories
+- [x] Users can create an account and log in
+- [x] Users can view and manage **only** their own transactions and categories
+- [x] Users can create a transaction
+- [x] Users can delete a transaction
+- [x] Users can edit a transaction
+- [x] Users can list all transactions
+- [x] Users can create a category
+- [x] Users can delete a category
+- [x] Users can edit a category
+- [x] Users can list all categories
 
 In addition, there are some front-end–specific requirements:
 
-- [ ] You must create a **React application** using **GraphQL** to query the API and **Vite** as the bundler
+- [x] You must create a **React application** using **GraphQL** to query the API and **Vite** as the bundler
 - [ ] Follow the **Figma layout** as closely as possible
 
 > 💡 Tip: Copy the checklist above into your project’s README.  
