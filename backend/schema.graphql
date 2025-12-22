@@ -62,7 +62,9 @@ scalar DateTimeISO
 input GetTransactionsFilterInput {
   categoryId: String
   description: String
+  endDate: String
   month: Float
+  startDate: String
   type: String
   year: Float
 }

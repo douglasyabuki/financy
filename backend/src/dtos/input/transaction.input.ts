@@ -49,4 +49,10 @@ export class GetTransactionsFilterInput {
 
   @Field(() => String, { nullable: true })
   description?: string
+
+  @Field(() => String, { nullable: true })
+  startDate?: string
+
+  @Field(() => String, { nullable: true })
+  endDate?: string
 }

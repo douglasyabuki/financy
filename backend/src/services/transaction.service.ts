@@ -169,6 +169,13 @@ export class TransactionService {
           lte: endOfMonth,
         }
       }
+
+      if (filters.startDate && filters.endDate) {
+        where.date = {
+          gte: new Date(filters.startDate),
+          lte: new Date(filters.endDate),
+        }
+      }
     }
 
     const [items, totalCount] = await Promise.all([
