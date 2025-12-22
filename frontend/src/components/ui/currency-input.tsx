@@ -4,11 +4,13 @@ import { NumericFormat } from "react-number-format";
 interface CurrencyInput {
   value: string | number;
   onChange: (value: number) => void;
+  id?: string;
 }
 
-export const CurrencyInput = ({ value, onChange }: CurrencyInput) => {
+export const CurrencyInput = ({ value, onChange, id }: CurrencyInput) => {
   return (
     <NumericFormat
+      id={id}
       value={value}
       onValueChange={({ floatValue }) => {
         onChange(floatValue ?? 0);
