@@ -6,6 +6,7 @@ import { Categories } from "./pages/categories";
 import { Login } from "./pages/login";
 import { Profile } from "./pages/profile";
 import { Register } from "./pages/register";
+import { Transactions } from "./pages/transactions";
 import { useAuthStore } from "./stores/auth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -70,7 +71,7 @@ export const App = () => {
           path="/transactions"
           element={
             <ProtectedRoute>
-              <>Transações</>
+              <Transactions />
             </ProtectedRoute>
           }
         />

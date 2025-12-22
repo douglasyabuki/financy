@@ -43,7 +43,9 @@ export interface Transaction {
   description: string;
   amount: number;
   type: TransactionType;
+  date: string;
   categoryId: string;
+  category: Category;
   createdAt: string;
   updatedAt?: string;
 }
@@ -60,4 +62,5 @@ export interface UpdateTransactionInput {
   type?: TransactionType;
   amount?: string;
   date?: string;
+  categoryId?: string;
 }
