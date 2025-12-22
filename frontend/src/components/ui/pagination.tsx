@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { buttonVariants, type Button } from "@/components/ui/button";
+import { type Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -38,26 +38,28 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 }
 
 type PaginationLinkProps = {
-  isActive?: boolean;
+  active?: boolean;
+  disabled?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
   React.ComponentProps<"a">;
 
 function PaginationLink({
   className,
-  isActive,
+  active,
+  disabled,
   size = "icon",
   ...props
 }: PaginationLinkProps) {
   return (
     <a
-      aria-current={isActive ? "page" : undefined}
+      aria-current={active ? "page" : undefined}
       data-slot="pagination-link"
-      data-active={isActive}
+      data-active={active}
+      data-disabled={disabled}
       className={cn(
-        buttonVariants({
-          variant: isActive ? "custom-primary" : "custom-secondary",
-          size,
-        }),
+        "flex size-8 items-center justify-center rounded-md border border-gray-300 p-2 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4",
+        "text-sm leading-5 font-medium tracking-normal",
+        active ? "bg-brand-base text-white" : "bg-white text-gray-700",
         className,
       )}
       {...props}
@@ -73,11 +75,10 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      className={cn(className)}
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   );
 }
@@ -90,10 +91,9 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      className={cn(className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
       <ChevronRightIcon />
     </PaginationLink>
   );

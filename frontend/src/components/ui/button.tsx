@@ -37,7 +37,7 @@ const buttonVariants = cva(
           "tracking-normal gap-2 px-3 py-2 text-sm leading-5 font-medium [&_svg:not([class*='size-'])]:size-4 h-9",
         "transaction-type":
           "tracking-normal gap-3 px-4 py-3.5 h-11.5 text-base leading-4.5 [&_svg:not([class*='size-'])]:size-4",
-        "custom-icon-sm": "size-8",
+        "custom-icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
         "custom-icon-md":
           "size-[2.625rem] [&_svg:not([class*='size-'])]:size-5",
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
