@@ -13,25 +13,39 @@ import { useQuery } from "@apollo/client/react";
 interface CategoryPicker {
   categoryId: string;
   onCategoryChange: (categoryId: string) => void;
+  placeholder?: string;
+  categories?: Category[];
+  showAll?: boolean;
 }
 
 export const CategoryPicker = ({
   categoryId,
   onCategoryChange,
+  placeholder = "Selecione",
+  categories: externalCategories,
+  showAll = false,
 }: CategoryPicker) => {
   const { data, loading } = useQuery<{ listCategories: Category[] }>(
     LIST_CATEGORIES,
+    {
+      skip: !!externalCategories,
+    },
   );
 
-  const categories = data?.listCategories || [];
+  const categories = externalCategories || data?.listCategories || [];
 
   return (
     <Select value={categoryId} onValueChange={onCategoryChange}>
       <SelectTrigger className="h-12! w-full">
-        <SelectValue placeholder="Selecione" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent className="px-3 py-3.5">
-        {loading ? (
+        {showAll && (
+          <SelectItem value="all" className="h-10">
+            Todas
+          </SelectItem>
+        )}
+        {loading && !externalCategories ? (
           <div className="p-2 text-sm text-gray-500">Carregando...</div>
         ) : categories.length > 0 ? (
           categories.map((category) => (

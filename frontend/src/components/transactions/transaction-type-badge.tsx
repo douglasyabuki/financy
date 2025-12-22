@@ -10,8 +10,8 @@ const transactionTypeBadgeVariants = cva(
   {
     variants: {
       type: {
-        INCOME: "text-green-dark [&_svg]:text-green-base",
-        EXPENSE: "text-red-dark [&_svg]:text-red-base",
+        INCOME: "text-green-dark [&_svg]:text-green-base!",
+        EXPENSE: "text-red-dark [&_svg]:text-red-base!",
       },
     },
     defaultVariants: {
@@ -23,28 +23,31 @@ const transactionTypeBadgeVariants = cva(
 type TransactionTypeBadge = React.ComponentProps<"span"> &
   VariantProps<typeof transactionTypeBadgeVariants> & {
     asChild?: boolean;
-    type: TransactionTypeEnum;
+    type: TransactionTypeEnum | string;
   };
 
 function TransactionTypeBadge({
   className,
   type = "EXPENSE",
   asChild = false,
-  children,
   ...props
 }: TransactionTypeBadge) {
   const Comp = asChild ? Slot : "span";
-  const Icon = type === "INCOME" ? ArrowUpCircle : ArrowDownCircle;
+  const normalizedType = type.toUpperCase() as TransactionTypeEnum;
+  const Icon = normalizedType === "INCOME" ? ArrowUpCircle : ArrowDownCircle;
 
   return (
     <Comp
       data-slot="transaction-type-badge"
-      data-type={type}
-      className={cn(transactionTypeBadgeVariants({ type, className }))}
+      data-type={normalizedType}
+      className={cn(
+        transactionTypeBadgeVariants({ type: normalizedType }),
+        className,
+      )}
       {...props}
     >
       <Icon />
-      {children}
+      {normalizedType === "INCOME" ? "Entrada" : "Saída"}
     </Comp>
   );
 }
