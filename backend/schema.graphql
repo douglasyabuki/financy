@@ -59,6 +59,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+input ForgotPasswordInput {
+  email: String!
+}
+
 input GetTransactionsFilterInput {
   categoryId: String
   description: String
@@ -85,9 +89,11 @@ type Mutation {
   createTransaction(categoryId: String!, data: CreateTransactionInput!): TransactionModel!
   deleteCategory(id: String!): Boolean!
   deleteTransaction(id: String!): TransactionModel!
+  forgotPassword(data: ForgotPasswordInput!): Boolean!
   login(data: LoginInput!): LoginOutput!
   refreshToken(data: RefreshTokenInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
+  resetPassword(data: ResetPasswordInput!): Boolean!
   updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
   updateProfile(data: UpdateUserInput!): UpdateProfileOutput!
   updateTransaction(data: UpdateTransactionInput!, id: String!): TransactionModel!
@@ -122,6 +128,13 @@ type RegisterOutput {
   refreshToken: String!
   token: String!
   user: UserModel!
+}
+
+input ResetPasswordInput {
+  code: String!
+  confirmPassword: String!
+  email: String!
+  password: String!
 }
 
 type TransactionModel {

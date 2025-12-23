@@ -4,9 +4,11 @@ import { LoadingFrame } from "./components/frames/loading-frame";
 import { Layout } from "./components/layout";
 import { Categories } from "./pages/categories";
 import { Dashboard } from "./pages/dashboard";
+import { ForgotPassword } from "./pages/forgot-password";
 import { Login } from "./pages/login";
 import { Profile } from "./pages/profile";
 import { Register } from "./pages/register";
+import { ResetPassword } from "./pages/reset-password";
 import { Transactions } from "./pages/transactions";
 import { useAuthStore } from "./stores/auth";
 
@@ -56,6 +58,22 @@ export const App = () => {
           element={
             <PublicRoute>
               <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
             </PublicRoute>
           }
         />

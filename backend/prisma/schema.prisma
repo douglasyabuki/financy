@@ -25,6 +25,9 @@ model User {
 
   transactions Transaction[]
   categories   Category[]
+
+  resetCode       String?
+  resetCodeExpiry DateTime?
 }
 
 model Transaction {

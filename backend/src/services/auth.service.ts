@@ -1,10 +1,13 @@
+import { User } from '@prisma/client'
+import crypto from 'node:crypto'
 import { prismaClient } from '../../prisma/prisma'
 import { LoginInput, RegisterInput } from '../dtos/input/auth.input'
-import { User } from '../generated/prisma/browser'
+import { EmailService } from '../services/email.service'
 import { comparePassword, hashPassword } from '../utils/hash'
 import { signJwt, verifyJwt } from '../utils/jwt'
 
 export class AuthService {
+  private emailService = new EmailService()
   async login(data: LoginInput) {
     const user = await prismaClient.user.findUnique({
       where: {
@@ -92,5 +95,65 @@ export class AuthService {
     } catch (e) {
       throw new Error('Invalid refresh token')
     }
+  }
+
+  async forgotPassword(email: string) {
+    const user = await prismaClient.user.findUnique({
+      where: { email },
+    })
+
+    if (!user) {
+      return true
+    }
+
+    const code = crypto.randomInt(100000, 999999).toString()
+    const expiry = new Date(Date.now() + 1000 * 60 * 15)
+
+    await prismaClient.user.update({
+      where: { id: user.id },
+      data: {
+        resetCode: code,
+        resetCodeExpiry: expiry,
+      },
+    })
+
+    await this.emailService.sendForgotPasswordEmail(email, code)
+
+    return true
+  }
+
+  async resetPassword(
+    email: string,
+    code: string,
+    password: string,
+    confirmPassword: string
+  ) {
+    const user = await prismaClient.user.findUnique({
+      where: { email },
+    })
+
+    if (
+      !user ||
+      !user.resetCode ||
+      !user.resetCodeExpiry ||
+      user.resetCode !== code ||
+      user.resetCodeExpiry < new Date() ||
+      password !== confirmPassword
+    ) {
+      throw new Error('Invalid or expired code')
+    }
+
+    const hash = await hashPassword(password)
+
+    await prismaClient.user.update({
+      where: { id: user.id },
+      data: {
+        password: hash,
+        resetCode: null,
+        resetCodeExpiry: null,
+      },
+    })
+
+    return true
   }
 }
