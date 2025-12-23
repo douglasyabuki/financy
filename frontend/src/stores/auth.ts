@@ -41,12 +41,14 @@ interface AuthState {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  isCheckingAuth: boolean;
   signup: (data: RegisterInput) => Promise<boolean>;
   login: (data: LoginInput) => Promise<boolean>;
   updateProfile: (data: UpdateProfileInput) => Promise<boolean>;
   logout: () => void;
   setTokens: (token: string, refreshToken: string) => void;
-  checkAuth: () => Promise<void>;
+  checkAuth: (silent?: boolean) => Promise<void>;
+  refreshSession: () => Promise<string | null>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -56,55 +58,66 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
-      checkAuth: async () => {
+      isCheckingAuth: true,
+      refreshSession: async () => {
+        const { refreshToken } = get();
+        if (!refreshToken) {
+          get().logout();
+          return null;
+        }
+
+        try {
+          const response = await fetch("http://localhost:4000/graphql", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: print(REFRESH_TOKEN),
+              variables: {
+                data: {
+                  refreshToken: refreshToken,
+                },
+              },
+            }),
+          });
+
+          const { data, errors } = await response.json();
+
+          if (errors || !data?.refreshToken) {
+            get().logout();
+            return null;
+          }
+
+          const { token: newToken, refreshToken: newRefreshToken } =
+            data.refreshToken;
+          set({ token: newToken, refreshToken: newRefreshToken });
+          return newToken;
+        } catch (error) {
+          get().logout();
+          return null;
+        }
+      },
+      checkAuth: async (silent = false) => {
+        if (!silent) set({ isCheckingAuth: true });
         const { token, refreshToken } = get();
-        if (!token || !refreshToken) return;
+        if (!token || !refreshToken) {
+          if (!silent) set({ isCheckingAuth: false });
+          return;
+        }
 
         try {
           const decoded: { exp: number } = jwtDecode(token);
           const currentTime = Date.now() / 1000;
+          const buffer = 300; // 5 minutes
 
-          if (decoded.exp < currentTime) {
-            const response = await fetch("http://localhost:4000/graphql", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                query: print(REFRESH_TOKEN),
-                variables: {
-                  data: {
-                    refreshToken: refreshToken,
-                  },
-                },
-              }),
-            });
-
-            const { data, errors } = await response.json();
-
-            if (errors || !data?.refreshToken) {
-              set({
-                user: null,
-                token: null,
-                refreshToken: null,
-                isAuthenticated: false,
-              });
-              apolloClient.clearStore();
-              return;
-            }
-
-            const { token: newToken, refreshToken: newRefreshToken } =
-              data.refreshToken;
-            set({ token: newToken, refreshToken: newRefreshToken });
+          if (decoded.exp < currentTime + buffer) {
+            await get().refreshSession();
           }
         } catch (error) {
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-          });
-          apolloClient.clearStore();
+          get().logout();
+        } finally {
+          if (!silent) set({ isCheckingAuth: false });
         }
       },
       setTokens: (token: string, refreshToken: string) =>

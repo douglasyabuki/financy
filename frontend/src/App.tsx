@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { LoadingFrame } from "./components/frames/loading-frame";
 import { Layout } from "./components/layout";
@@ -11,24 +11,19 @@ import { Transactions } from "./pages/transactions";
 import { useAuthStore } from "./stores/auth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, checkAuth } = useAuthStore();
-  const [isChecking, setIsChecking] = useState(true);
+  const { isAuthenticated, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
-    const check = async () => {
-      await checkAuth();
-      setIsChecking(false);
-    };
-    check();
+    checkAuth();
 
     const interval = setInterval(() => {
-      checkAuth();
+      checkAuth(true);
     }, 120000); // Check every 2 minutes
 
     return () => clearInterval(interval);
   }, [checkAuth]);
 
-  if (isChecking) {
+  if (isCheckingAuth) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingFrame text="Verificando autenticação..." />

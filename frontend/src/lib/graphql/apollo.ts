@@ -7,51 +7,12 @@ import {
 } from "@apollo/client";
 import { SetContextLink } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { GraphQLError, print } from "graphql";
+import { GraphQLError } from "graphql";
 import { useAuthStore } from "../../stores/auth";
-import { REFRESH_TOKEN } from "./mutations/refresh-token";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql",
 });
-
-const getNewToken = async () => {
-  const token = useAuthStore.getState().refreshToken;
-  if (!token) throw new Error("No refresh token");
-
-  try {
-    const response = await fetch("http://localhost:4000/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: print(REFRESH_TOKEN),
-        variables: {
-          data: {
-            refreshToken: token,
-          },
-        },
-      }),
-    });
-
-    const { data, errors } = await response.json();
-
-    if (errors || !data?.refreshToken) {
-      useAuthStore.getState().logout();
-      throw new Error("Unable to refresh token");
-    }
-
-    const { token: newToken, refreshToken: newRefreshToken } =
-      data.refreshToken;
-
-    useAuthStore.getState().setTokens(newToken, newRefreshToken);
-    return newToken;
-  } catch (error) {
-    useAuthStore.getState().logout();
-    throw error;
-  }
-};
 
 const errorLink = onError(
   ({
@@ -66,9 +27,21 @@ const errorLink = onError(
     if (graphQLErrors) {
       for (const err of graphQLErrors) {
         if (err.message === "Unauthenticated") {
+          console.log(
+            "[Apollo] Unauthenticated error caught. Attempting refresh...",
+          );
           return new Observable((observer) => {
-            getNewToken()
+            useAuthStore
+              .getState()
+              .refreshSession()
               .then((accessToken) => {
+                if (!accessToken) {
+                  console.log("[Apollo] Refresh failed. Logout triggered.");
+                  observer.error(new Error("Unauthenticated"));
+                  return;
+                }
+
+                console.log("[Apollo] Token refreshed successfully.");
                 const oldHeaders = operation.getContext().headers;
                 operation.setContext({
                   headers: {
@@ -86,6 +59,7 @@ const errorLink = onError(
                 forward(operation).subscribe(subscriber);
               })
               .catch((error) => {
+                console.error("[Apollo] Error during token refresh:", error);
                 observer.error(error);
               });
           });
