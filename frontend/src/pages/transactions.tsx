@@ -1,5 +1,3 @@
-import { LoadingFrame } from "@/components/frames/loading-frame";
-import { NoItemFoundFrame } from "@/components/frames/no-item-found-frame";
 import { CreateTransactionDialog } from "@/components/transactions/create-transaction-dialog";
 import { DeleteTransactionDialog } from "@/components/transactions/delete-transaction-dialog";
 import { EditTransactionDialog } from "@/components/transactions/edit-transaction-dialog";
@@ -116,31 +114,24 @@ export const Transactions = () => {
         }}
         categories={categories}
       />
-
-      {loading && transactions.length === 0 ? (
-        <LoadingFrame text="Carregando transações" spanDots />
-      ) : transactions.length > 0 ? (
-        <div className="flex flex-col gap-4">
-          <TransactionsTable
-            transactions={transactions}
-            offset={offset}
-            limit={limit}
-            totalCount={totalCount}
-            totalPages={totalPages}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-            onEditToggle={(transaction: Transaction) => {
-              setTransactionToEdit(transaction);
-            }}
-            onDeleteToggle={(transaction: Transaction) => {
-              setTransactionToDelete(transaction);
-            }}
-          />
-        </div>
-      ) : (
-        <NoItemFoundFrame text="Nenhuma transação encontrada" />
-      )}
-
+      <div className="flex flex-col gap-4">
+        <TransactionsTable
+          transactions={transactions}
+          offset={offset}
+          limit={limit}
+          totalCount={totalCount}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          loading={loading}
+          handlePageChange={handlePageChange}
+          onEditToggle={(transaction: Transaction) => {
+            setTransactionToEdit(transaction);
+          }}
+          onDeleteToggle={(transaction: Transaction) => {
+            setTransactionToDelete(transaction);
+          }}
+        />
+      </div>
       <CreateTransactionDialog
         isOpen={isCreateToggled}
         onClose={() => onCreateToggle(false)}

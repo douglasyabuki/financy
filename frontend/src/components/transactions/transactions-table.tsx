@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { SquarePen, Trash } from "lucide-react";
 import { NumericFormat } from "react-number-format";
 import { ColoredCategoryIcon } from "../categories/colored-category-icon";
+import { LoadingFrame } from "../frames/loading-frame";
+import { NoItemFoundFrame } from "../frames/no-item-found-frame";
 import { Button } from "../ui/button";
 import {
   Pagination,
@@ -31,6 +33,7 @@ interface TransactionsTable {
   totalCount: number;
   totalPages: number;
   currentPage: number;
+  loading?: boolean;
   handlePageChange: (page: number) => void;
   onEditToggle: (transaction: Transaction) => void;
   onDeleteToggle: (transaction: Transaction) => void;
@@ -42,6 +45,7 @@ export const TransactionsTable = ({
   totalCount,
   totalPages,
   currentPage,
+  loading,
   handlePageChange,
   onEditToggle,
   onDeleteToggle,
@@ -59,67 +63,85 @@ export const TransactionsTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((transaction) => (
-          <TableRow key={transaction.id} className="h-18">
-            <TableCell className="px-6 text-base leading-6 font-medium tracking-normal text-gray-800">
-              <div className="flex items-center gap-2">
-                <ColoredCategoryIcon
-                  icon={transaction.category.icon}
-                  color={transaction.category.color}
-                />
-                {transaction.description}
-              </div>
-            </TableCell>
-            <TableCell className="px-6 text-center text-sm leading-5 font-normal tracking-normal text-gray-600">
-              {format(new Date(transaction.date), "dd/MM/yy")}
-            </TableCell>
-            <TableCell className="w-50 px-6 text-center">
-              <Tag color={transaction.category.color}>
-                {transaction.category.title}
-              </Tag>
-            </TableCell>
-            <TableCell className="w-34 px-6">
-              <div className="flex items-center justify-center">
-                <TransactionTypeBadge type={transaction.type} />
-              </div>
-            </TableCell>
-            <TableCell className="w-50 px-6 text-center">
-              <NumericFormat
-                value={transaction.amount}
-                displayType="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix={
-                  transaction.type.toUpperCase() === "INCOME"
-                    ? "+ R$ "
-                    : "- R$ "
-                }
-                decimalScale={2}
-                fixedDecimalScale
-                className="text-center text-sm leading-5 font-semibold tracking-normal text-gray-800"
-                allowNegative={false}
-              />
-            </TableCell>
-            <TableCell className="w-30 px-6">
-              <div className="flex items-center justify-center gap-2">
-                <Button
-                  variant="custom-icon"
-                  size="custom-icon-sm"
-                  onClick={() => onDeleteToggle(transaction)}
-                >
-                  <Trash className="text-destructive" />
-                </Button>
-                <Button
-                  variant="custom-icon"
-                  size="custom-icon-sm"
-                  onClick={() => onEditToggle(transaction)}
-                >
-                  <SquarePen />
-                </Button>
-              </div>
+        {loading ? (
+          <TableRow className="h-80">
+            <TableCell colSpan={6}>
+              <LoadingFrame size="lg" text="Carregando transações" spanDots />
             </TableCell>
           </TableRow>
-        ))}
+        ) : (
+          <>
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => (
+                <TableRow key={transaction.id} className="h-18">
+                  <TableCell className="px-6 text-base leading-6 font-medium tracking-normal text-gray-800">
+                    <div className="flex items-center gap-2">
+                      <ColoredCategoryIcon
+                        icon={transaction.category.icon}
+                        color={transaction.category.color}
+                      />
+                      {transaction.description}
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 text-center text-sm leading-5 font-normal tracking-normal text-gray-600">
+                    {format(new Date(transaction.date), "dd/MM/yy")}
+                  </TableCell>
+                  <TableCell className="w-50 px-6 text-center">
+                    <Tag color={transaction.category.color}>
+                      {transaction.category.title}
+                    </Tag>
+                  </TableCell>
+                  <TableCell className="w-34 px-6">
+                    <div className="flex items-center justify-center">
+                      <TransactionTypeBadge type={transaction.type} />
+                    </div>
+                  </TableCell>
+                  <TableCell className="w-50 px-6 text-center">
+                    <NumericFormat
+                      value={transaction.amount}
+                      displayType="text"
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      prefix={
+                        transaction.type.toUpperCase() === "INCOME"
+                          ? "+ R$ "
+                          : "- R$ "
+                      }
+                      decimalScale={2}
+                      fixedDecimalScale
+                      className="text-center text-sm leading-5 font-semibold tracking-normal text-gray-800"
+                      allowNegative={false}
+                    />
+                  </TableCell>
+                  <TableCell className="w-30 px-6">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="custom-icon"
+                        size="custom-icon-sm"
+                        onClick={() => onDeleteToggle(transaction)}
+                      >
+                        <Trash className="text-destructive" />
+                      </Button>
+                      <Button
+                        variant="custom-icon"
+                        size="custom-icon-sm"
+                        onClick={() => onEditToggle(transaction)}
+                      >
+                        <SquarePen />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="h-80">
+                <TableCell colSpan={6}>
+                  <NoItemFoundFrame text="Nenhuma transação encontrada" />
+                </TableCell>
+              </TableRow>
+            )}
+          </>
+        )}
       </TableBody>
       <TableFooter className="rounded-b-2lg bg-white ring ring-gray-200 ring-inset">
         <TableRow className="h-18">
