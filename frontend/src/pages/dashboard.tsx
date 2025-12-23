@@ -48,9 +48,9 @@ export const Dashboard = () => {
 
   return (
     <div className="flex h-auto w-full flex-1 flex-col gap-8 self-stretch">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <SummaryCards balanceSummary={data?.balanceSummary} loading={loading} />
-        <div className="grid grid-cols-3 gap-6">
+        <div className="flex flex-col gap-6 xl:grid xl:grid-cols-3">
           <div className="col-span-2">
             {data?.listTransactions && (
               <RecentTransactionsTable

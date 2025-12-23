@@ -74,7 +74,7 @@ export const Categories = () => {
         <LoadingFrame text="Carregando categorias" spanDots />
       ) : categories.length > 0 ? (
         <>
-          <div className="flex w-full flex-wrap gap-6">
+          <div className="grid gap-6 lg:grid-cols-3">
             <CategoriesSummaryCard
               icon={<Tag className="size-8 text-gray-700" />}
               title={categoriesCount}
@@ -102,7 +102,7 @@ export const Categories = () => {
               description="CATEGORIA MAIS USADA"
             />
           </div>
-          <div className="grid grid-cols-4 space-y-4 space-x-4">
+          <div className="flex flex-wrap justify-around gap-6 xl:grid xl:grid-cols-4 xl:gap-0 xl:space-y-4 xl:space-x-4">
             {categories.map((category) => {
               return (
                 <CategoryCard

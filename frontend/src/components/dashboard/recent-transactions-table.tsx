@@ -34,9 +34,11 @@ export const RecentTransactionsTable = ({
     <Table className="rounded-2lg overflow-hidden bg-white ring ring-gray-200 ring-inset">
       <TableHeader className="">
         <TableRow className="h-15.25">
-          <TableHead className="px-6 text-start">TRANSAÇÕES RECENTES</TableHead>
+          <TableHead className="px-2 text-start lg:px-4 xl:px-6">
+            TRANSAÇÕES RECENTES
+          </TableHead>
           <TableHead colSpan={2}>
-            <div className="flex items-center justify-end px-6">
+            <div className="flex items-center justify-end px-2 lg:px-4 xl:px-6">
               <Link to="/transactions">
                 Ver todas <ChevronRight className="size-4" />
               </Link>
@@ -56,7 +58,7 @@ export const RecentTransactionsTable = ({
             {transactions.length > 0 ? (
               transactions.map((transaction) => (
                 <TableRow key={transaction.id} className="h-20">
-                  <TableCell className="px-6 text-base leading-6 font-medium tracking-normal text-gray-800">
+                  <TableCell className="px-2 text-base leading-6 font-medium tracking-normal text-gray-800 lg:px-4 xl:px-6">
                     <div className="flex items-center gap-4">
                       <ColoredCategoryIcon
                         icon={transaction.category.icon}
@@ -72,12 +74,12 @@ export const RecentTransactionsTable = ({
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="w-50 px-6 text-center">
+                  <TableCell className="w-50 px-2 text-center lg:px-4 xl:px-6">
                     <Tag color={transaction.category.color}>
                       {transaction.category.title}
                     </Tag>
                   </TableCell>
-                  <TableCell className="w-50 px-6 text-center">
+                  <TableCell className="w-50 px-2 text-center lg:px-4 xl:px-6">
                     <div className="flex items-center justify-center gap-2">
                       <NumericFormat
                         value={transaction.amount}
@@ -114,7 +116,7 @@ export const RecentTransactionsTable = ({
       </TableBody>
       <TableFooter className="rounded-b-2lg bg-white ring ring-gray-200 ring-inset">
         <TableRow className="h-15">
-          <TableCell colSpan={6} className="px-6">
+          <TableCell colSpan={6} className="px-2 lg:px-4 xl:px-6">
             <Link to="/transactions" className="mx-auto">
               + Nova transação
             </Link>

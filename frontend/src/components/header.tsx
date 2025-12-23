@@ -1,3 +1,4 @@
+import logoIcon from "@/assets/logo-icon.svg";
 import logo from "@/assets/logo.svg";
 import { getInitials } from "@/utils/initials";
 import { NavLink } from "react-router-dom";
@@ -34,8 +35,11 @@ export const Header = () => {
   return (
     <div className="bg-card w-full px-12 py-4">
       <div className="relative flex w-full justify-between">
-        <div className="flex-1">
+        <div className="hidden lg:block">
           <img src={logo} />
+        </div>
+        <div className="lg:hidden">
+          <img src={logoIcon} />
         </div>
         <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-5">
           <HeaderLink to="/">Dashboard</HeaderLink>

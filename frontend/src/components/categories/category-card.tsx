@@ -23,7 +23,11 @@ export const CategoryCard = ({
   return (
     <Card className="h-56.5 w-71 p-6">
       <CardHeader className="flex items-start justify-between">
-        <ColoredCategoryIcon icon={category.icon} color={category.color} />
+        <ColoredCategoryIcon
+          icon={category.icon}
+          color={category.color}
+          className="border-none"
+        />
         <CardAction className="flex gap-2">
           <Button
             variant="custom-icon"

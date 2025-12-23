@@ -16,7 +16,7 @@ export const CategoriesSummaryCard = ({
   className,
 }: CategoriesSummaryCard) => {
   return (
-    <Card className={cn("h-26.5 min-w-[23.6625rem] flex-1 p-6", className)}>
+    <Card className={cn("h-26.5 flex-1 p-6", className)}>
       <CardHeader className="flex gap-4">
         {icon}
         <div className="flex flex-col gap-2">

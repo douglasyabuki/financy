@@ -35,7 +35,7 @@ export const TransactionsFilters = ({
   categories,
 }: TransactionsFilters) => {
   return (
-    <Card className="grid grid-cols-4 gap-4 rounded-lg border border-gray-200 bg-white px-6 pt-5 pb-6 shadow-none">
+    <Card className="grid gap-4 rounded-lg border border-gray-200 bg-white px-6 pt-5 pb-6 shadow-none md:grid-cols-2 xl:grid-cols-4">
       <div className="group/search-for-description flex flex-col gap-2">
         <Label
           htmlFor="search-for-description"

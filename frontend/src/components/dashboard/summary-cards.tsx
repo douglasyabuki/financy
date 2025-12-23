@@ -47,7 +47,7 @@ export const SummaryCards = ({ balanceSummary, loading }: SummaryCards) => {
     monthExpense = 0,
   } = balanceSummary ?? {};
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-3">
       <Card className="p-6">
         <CardHeader className="flex items-center justify-start gap-3">
           <Wallet className="text-purple-base size-5" />
