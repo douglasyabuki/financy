@@ -43,7 +43,7 @@ export class TransactionService {
 
   async getCategorySummary(userId: string) {
     const aggregations = await prismaClient.transaction.groupBy({
-      by: ['categoryId'],
+      by: ['categoryId', 'type'],
       where: {
         userId,
       },
@@ -63,16 +63,43 @@ export class TransactionService {
       },
     })
 
-    return aggregations.map(agg => {
-      const category = categories.find(c => c.id === agg.categoryId)
-      if (!category) throw new Error(`Category ${agg.categoryId} not found`)
-      return {
-        category: { ...category, color: category.color as CategoryColor },
-        count: agg._count.id,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        totalAmount: agg._sum.amount ?? new Decimal(0),
+    const categoryMap = new Map<
+      string,
+      { title: string; count: number; netAmount: Decimal; category: any }
+    >()
+
+    for (const agg of aggregations) {
+      if (!categoryMap.has(agg.categoryId)) {
+        const category = categories.find(c => c.id === agg.categoryId)
+        if (!category) continue
+
+        categoryMap.set(agg.categoryId, {
+          title: category.title,
+          category,
+          count: 0,
+          netAmount: new Decimal(0),
+        })
       }
-    })
+
+      const entry = categoryMap.get(agg.categoryId)!
+      entry.count += agg._count.id
+
+      const amount = agg._sum.amount ?? new Decimal(0)
+      if (agg.type === TransactionType.income) {
+        entry.netAmount = entry.netAmount.plus(amount)
+      } else {
+        entry.netAmount = entry.netAmount.minus(amount)
+      }
+    }
+
+    return Array.from(categoryMap.values()).map(entry => ({
+      category: {
+        ...entry.category,
+        color: entry.category.color as CategoryColor,
+      },
+      count: entry.count,
+      totalAmount: entry.netAmount,
+    }))
   }
 
   async getBalanceSummary(userId: string) {
