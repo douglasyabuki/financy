@@ -1,5 +1,4 @@
 import { env } from "@/env";
-import { apolloClient } from "@/lib/graphql/apollo";
 import { LOGIN } from "@/lib/graphql/mutations/login";
 import { REFRESH_TOKEN } from "@/lib/graphql/mutations/refresh-token";
 import { REGISTER } from "@/lib/graphql/mutations/register";
@@ -10,6 +9,7 @@ import type {
   UpdateProfileInput,
   User,
 } from "@/types";
+import { ApolloClient } from "@apollo/client";
 import { print } from "graphql";
 import { jwtDecode } from "jwt-decode";
 import { create } from "zustand";
@@ -50,6 +50,8 @@ interface AuthState {
   setTokens: (token: string, refreshToken: string) => void;
   checkAuth: (silent?: boolean) => Promise<void>;
   refreshSession: () => Promise<string | null>;
+  client: ApolloClient | null;
+  setClient: (client: ApolloClient) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -60,6 +62,8 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuthenticated: false,
       isCheckingAuth: true,
+      client: null,
+      setClient: (client) => set({ client }),
       refreshSession: async () => {
         const { refreshToken } = get();
         if (!refreshToken) {
@@ -125,7 +129,11 @@ export const useAuthStore = create<AuthState>()(
         set({ token, refreshToken }),
       login: async (loginData: LoginInput) => {
         try {
-          const { data } = await apolloClient.mutate<
+          const client = get().client;
+          if (!client) {
+            throw new Error("Apollo Client not initialized");
+          }
+          const { data } = await client.mutate<
             LoginMutationData,
             { data: LoginInput }
           >({
@@ -162,7 +170,11 @@ export const useAuthStore = create<AuthState>()(
       },
       signup: async (registerData: RegisterInput) => {
         try {
-          const { data } = await apolloClient.mutate<
+          const client = get().client;
+          if (!client) {
+            throw new Error("Apollo Client not initialized");
+          }
+          const { data } = await client.mutate<
             RegisterMutationData,
             { data: RegisterInput }
           >({
@@ -199,7 +211,11 @@ export const useAuthStore = create<AuthState>()(
       },
       updateProfile: async (profileData: UpdateProfileInput) => {
         try {
-          const { data } = await apolloClient.mutate<
+          const client = get().client;
+          if (!client) {
+            throw new Error("Apollo Client not initialized");
+          }
+          const { data } = await client.mutate<
             UpdateProfileMutationData,
             { data: { name: string } }
           >({
@@ -235,11 +251,17 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           isAuthenticated: false,
         });
-        apolloClient.clearStore();
+        get().client?.clearStore();
       },
     }),
     {
       name: "auth-storage",
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        refreshToken: state.refreshToken,
+        isAuthenticated: state.isAuthenticated,
+      }),
     },
   ),
 );

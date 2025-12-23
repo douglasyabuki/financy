@@ -84,3 +84,5 @@ export const apolloClient = new ApolloClient({
   link: ApolloLink.from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache(),
 });
+
+useAuthStore.getState().setClient(apolloClient);
