@@ -20,7 +20,7 @@ As with the API, the application must support the following features and rules:
 In addition, there are some front-end–specific requirements:
 
 - [x] You must create a **React application** using **GraphQL** to query the API and **Vite** as the bundler
-- [ ] Follow the **Figma layout** as closely as possible
+- [x] Follow the **Figma layout** as closely as possible
 
 > 💡 Tip: Copy the checklist above into your project’s README.  
 > This makes it easier to track your progress as you implement each feature.
