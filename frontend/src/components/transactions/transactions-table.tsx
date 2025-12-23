@@ -89,10 +89,15 @@ export const TransactionsTable = ({
                 displayType="text"
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={Number(transaction.amount) > 0 ? "+ R$ " : "- R$ "}
+                prefix={
+                  transaction.type.toUpperCase() === "INCOME"
+                    ? "+ R$ "
+                    : "- R$ "
+                }
                 decimalScale={2}
                 fixedDecimalScale
                 className="text-center text-sm leading-5 font-semibold tracking-normal text-gray-800"
+                allowNegative={false}
               />
             </TableCell>
             <TableCell className="w-30 px-6">
