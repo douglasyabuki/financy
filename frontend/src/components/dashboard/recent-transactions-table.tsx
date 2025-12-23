@@ -3,6 +3,8 @@ import type { Transaction } from "@/types";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import { NumericFormat } from "react-number-format";
+import { LoadingFrame } from "../frames/loading-frame";
+import { NoItemFoundFrame } from "../frames/no-item-found-frame";
 import { TransactionTypeBadge } from "../transactions/transaction-type-badge";
 import { Link } from "../ui/link";
 import {
@@ -21,10 +23,12 @@ interface RecentTransactionsTable {
     Transaction,
     "id" | "description" | "date" | "amount" | "type" | "category"
   >[];
+  loading?: boolean;
 }
 
 export const RecentTransactionsTable = ({
   transactions,
+  loading,
 }: RecentTransactionsTable) => {
   return (
     <Table className="rounded-2lg overflow-hidden bg-white ring ring-gray-200 ring-inset">
@@ -41,54 +45,72 @@ export const RecentTransactionsTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((transaction) => (
-          <TableRow key={transaction.id} className="h-20">
-            <TableCell className="px-6 text-base leading-6 font-medium tracking-normal text-gray-800">
-              <div className="flex items-center gap-4">
-                <ColoredCategoryIcon
-                  icon={transaction.category.icon}
-                  color={transaction.category.color}
-                />
-                <span className="flex flex-col gap-0.5">
-                  <p className="text-base leading-6 font-medium tracking-normal text-gray-800">
-                    {transaction.description}
-                  </p>
-                  <p className="text-sm leading-5 font-normal tracking-normal text-gray-600">
-                    {format(new Date(transaction.date), "dd/MM/yy")}
-                  </p>
-                </span>
-              </div>
-            </TableCell>
-            <TableCell className="w-50 px-6 text-center">
-              <Tag color={transaction.category.color}>
-                {transaction.category.title}
-              </Tag>
-            </TableCell>
-            <TableCell className="w-50 px-6 text-center">
-              <div className="flex items-center justify-center gap-2">
-                <NumericFormat
-                  value={transaction.amount}
-                  displayType="text"
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix={
-                    transaction.type.toUpperCase() === "INCOME"
-                      ? "+ R$ "
-                      : "- R$ "
-                  }
-                  decimalScale={2}
-                  fixedDecimalScale
-                  className="text-center text-sm leading-5 font-semibold tracking-normal text-gray-800"
-                  allowNegative={false}
-                />
-                <TransactionTypeBadge
-                  type={transaction.type}
-                  displayText={false}
-                />
-              </div>
+        {loading ? (
+          <TableRow className="h-80">
+            <TableCell colSpan={6}>
+              <LoadingFrame size="lg" text="Carregando transações" spanDots />
             </TableCell>
           </TableRow>
-        ))}
+        ) : (
+          <>
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => (
+                <TableRow key={transaction.id} className="h-20">
+                  <TableCell className="px-6 text-base leading-6 font-medium tracking-normal text-gray-800">
+                    <div className="flex items-center gap-4">
+                      <ColoredCategoryIcon
+                        icon={transaction.category.icon}
+                        color={transaction.category.color}
+                      />
+                      <span className="flex flex-col gap-0.5">
+                        <p className="text-base leading-6 font-medium tracking-normal text-gray-800">
+                          {transaction.description}
+                        </p>
+                        <p className="text-sm leading-5 font-normal tracking-normal text-gray-600">
+                          {format(new Date(transaction.date), "dd/MM/yy")}
+                        </p>
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="w-50 px-6 text-center">
+                    <Tag color={transaction.category.color}>
+                      {transaction.category.title}
+                    </Tag>
+                  </TableCell>
+                  <TableCell className="w-50 px-6 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <NumericFormat
+                        value={transaction.amount}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        prefix={
+                          transaction.type.toUpperCase() === "INCOME"
+                            ? "+ R$ "
+                            : "- R$ "
+                        }
+                        decimalScale={2}
+                        fixedDecimalScale
+                        className="text-center text-sm leading-5 font-semibold tracking-normal text-gray-800"
+                        allowNegative={false}
+                      />
+                      <TransactionTypeBadge
+                        type={transaction.type}
+                        displayText={false}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="h-80">
+                <TableCell colSpan={6}>
+                  <NoItemFoundFrame text="Nenhuma transação encontrada" />
+                </TableCell>
+              </TableRow>
+            )}
+          </>
+        )}
       </TableBody>
       <TableFooter className="rounded-b-2lg bg-white ring ring-gray-200 ring-inset">
         <TableRow className="h-15">

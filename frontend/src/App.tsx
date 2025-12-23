@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { LoadingFrame } from "./components/frames/loading-frame";
 import { Layout } from "./components/layout";
 import { Categories } from "./pages/categories";
+import { Dashboard } from "./pages/dashboard";
 import { Login } from "./pages/login";
 import { Profile } from "./pages/profile";
 import { Register } from "./pages/register";
@@ -19,6 +20,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       setIsChecking(false);
     };
     check();
+
+    const interval = setInterval(() => {
+      checkAuth();
+    }, 120000); // Check every 2 minutes
+
+    return () => clearInterval(interval);
   }, [checkAuth]);
 
   if (isChecking) {
@@ -63,7 +70,7 @@ export const App = () => {
           path="/"
           element={
             <ProtectedRoute>
-              <>Dashboard</>
+              <Dashboard />
             </ProtectedRoute>
           }
         />

@@ -1,6 +1,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownCircle, ArrowUpCircle, Wallet } from "lucide-react";
 import { NumericFormat } from "react-number-format";
+import { LoadingFrame } from "../frames/loading-frame";
+
+interface SummaryCardContent {
+  value: number;
+  loading?: boolean;
+}
+
+const SummaryCardContent = ({ value, loading }: SummaryCardContent) => {
+  return (
+    <CardContent>
+      {loading ? (
+        <LoadingFrame size="md" />
+      ) : (
+        <NumericFormat
+          value={value}
+          displayType="text"
+          thousandSeparator="."
+          decimalSeparator=","
+          prefix="R$ "
+          decimalScale={2}
+          fixedDecimalScale
+          className="text-start text-[1.75rem] leading-8 font-bold tracking-normal text-gray-800"
+        />
+      )}
+    </CardContent>
+  );
+};
 
 interface SummaryCards {
   balanceSummary:
@@ -10,9 +37,10 @@ interface SummaryCards {
         monthExpense: number;
       }
     | undefined;
+  loading?: boolean;
 }
 
-export const SummaryCards = ({ balanceSummary }: SummaryCards) => {
+export const SummaryCards = ({ balanceSummary, loading }: SummaryCards) => {
   const {
     balance = 0,
     monthIncome = 0,
@@ -27,18 +55,7 @@ export const SummaryCards = ({ balanceSummary }: SummaryCards) => {
             SALDO TOTAL
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <NumericFormat
-            value={balance}
-            displayType="text"
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            className="text-start text-[1.75rem] leading-8 font-bold tracking-normal text-gray-800"
-          />
-        </CardContent>
+        <SummaryCardContent value={balance} loading={loading} />
       </Card>
       <Card className="p-6">
         <CardHeader className="flex items-center justify-start gap-3">
@@ -47,18 +64,7 @@ export const SummaryCards = ({ balanceSummary }: SummaryCards) => {
             RECEITAS DO MÊS
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <NumericFormat
-            value={monthIncome}
-            displayType="text"
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            className="text-start text-[1.75rem] leading-8 font-bold tracking-normal text-gray-800"
-          />
-        </CardContent>
+        <SummaryCardContent value={monthIncome} loading={loading} />
       </Card>
       <Card className="p-6">
         <CardHeader className="flex items-center justify-start gap-3">
@@ -67,18 +73,7 @@ export const SummaryCards = ({ balanceSummary }: SummaryCards) => {
             DESPESAS DO MÊS
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <NumericFormat
-            value={monthExpense}
-            displayType="text"
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            className="text-start text-[1.75rem] leading-8 font-bold tracking-normal text-gray-800"
-          />
-        </CardContent>
+        <SummaryCardContent value={monthExpense} loading={loading} />
       </Card>
     </div>
   );

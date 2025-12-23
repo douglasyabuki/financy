@@ -1,12 +1,7 @@
 import { cn } from "@/lib/utils";
+import { cva } from "class-variance-authority";
 import { Loader } from "lucide-react";
 import { type ComponentProps } from "react";
-
-interface LoadingFrame extends ComponentProps<"div"> {
-  text?: string;
-  iconClassName?: string;
-  spanDots?: boolean;
-}
 
 const Dots = () => {
   return (
@@ -22,32 +17,43 @@ const Dots = () => {
   );
 };
 
+interface LoadingFrame extends ComponentProps<"div"> {
+  text?: string;
+  iconClassName?: string;
+  spanDots?: boolean;
+  size?: "md" | "lg";
+}
+
+const loadingFrameVariants = cva(
+  "flex h-fit flex-col items-center justify-center [&_svg:not([class*='animate-'])]:animate-[spin_2s_linear_infinite] text-lg leading-6 font-medium tracking-normal text-gray-700",
+  {
+    variants: {
+      size: {
+        md: "gap-2 py-0 [&_svg:not([class*='size-'])]:size-8",
+        lg: "gap-4 py-32 [&_svg:not([class*='size-'])]:size-10",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
+
 export const LoadingFrame = ({
   text,
   className,
   iconClassName,
   spanDots,
+  size,
   ...props
 }: LoadingFrame) => {
   return (
     <div
-      className={cn(
-        "flex h-fit flex-col items-center justify-center gap-4 py-32",
-        className,
-      )}
+      className={cn(loadingFrameVariants({ size: "md" }), className)}
       {...props}
     >
-      <Loader
-        className={cn(
-          "text-primary size-10 animate-[spin_2s_linear_infinite]",
-          iconClassName,
-        )}
-      />
-      {text && (
-        <p className="mt-2 text-lg leading-6 font-medium tracking-normal text-gray-700">
-          {text}
-        </p>
-      )}
+      <Loader className={cn("text-primary", iconClassName)} />
+      {text && <p className="mt-2">{text}</p>}
       {spanDots && <Dots />}
     </div>
   );
