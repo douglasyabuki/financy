@@ -1,3 +1,5 @@
+import { env } from "@/env";
+import { useAuthStore } from "@/stores/auth";
 import {
   ApolloClient,
   ApolloLink,
@@ -8,10 +10,9 @@ import {
 import { SetContextLink } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { GraphQLError } from "graphql";
-import { useAuthStore } from "../../stores/auth";
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: env.VITE_BACKEND_URL,
 });
 
 const errorLink = onError(

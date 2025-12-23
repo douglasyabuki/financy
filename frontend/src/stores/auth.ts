@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { apolloClient } from "@/lib/graphql/apollo";
 import { LOGIN } from "@/lib/graphql/mutations/login";
 import { REFRESH_TOKEN } from "@/lib/graphql/mutations/refresh-token";
@@ -67,7 +68,7 @@ export const useAuthStore = create<AuthState>()(
         }
 
         try {
-          const response = await fetch("http://localhost:4000/graphql", {
+          const response = await fetch(env.VITE_BACKEND_URL, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
