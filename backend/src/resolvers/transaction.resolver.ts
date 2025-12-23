@@ -51,20 +51,23 @@ export class TransactionResolver {
   @Mutation(() => TransactionModel)
   async updateTransaction(
     @Arg('id', () => String) id: string,
-    @Arg('data', () => UpdateTransactionInput) data: UpdateTransactionInput
+    @Arg('data', () => UpdateTransactionInput) data: UpdateTransactionInput,
+    @GraphqlUser() user: User
   ): Promise<TransactionModel> {
     return this.transactionService.updateTransaction(
       id,
       data,
-      data.type ? (data.type.toLowerCase() as TransactionType) : 'expense'
+      data.type ? (data.type.toLowerCase() as TransactionType) : 'expense',
+      user.id
     )
   }
 
   @Mutation(() => TransactionModel)
   async deleteTransaction(
-    @Arg('id', () => String) id: string
+    @Arg('id', () => String) id: string,
+    @GraphqlUser() user: User
   ): Promise<TransactionModel> {
-    return this.transactionService.deleteTransaction(id)
+    return this.transactionService.deleteTransaction(id, user.id)
   }
 
   @Query(() => PaginatedTransactions)
