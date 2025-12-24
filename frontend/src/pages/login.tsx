@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth";
 import { Eye, EyeClosed, Lock, Mail, UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, NavLink } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,30 +27,35 @@ import { toast } from "sonner";
 export const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const login = useAuthStore((state) => state.login);
+  const [openSuggestions, setOpenSuggestions] = useState(false);
+  const {
+    login,
+    rememberMe,
+    setRememberMe,
+    loginHistory,
+    addToLoginHistory,
+    rememberedEmail,
+    setRememberedEmail,
+  } = useAuthStore();
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "",
+      email: rememberMe && rememberedEmail ? rememberedEmail : "",
       password: "",
     },
   });
 
   const email = watch("email");
 
-  useEffect(() => {
-    if (rememberMe) {
-      localStorage.setItem("email", email);
-    } else {
-      localStorage.removeItem("email");
-    }
-  }, [email, rememberMe]);
+  const filteredHistory = loginHistory.filter((historyEmail) =>
+    historyEmail.toLowerCase().includes((email || "").toLowerCase()),
+  );
 
   const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true);
@@ -62,6 +67,12 @@ export const Login = () => {
       });
       if (loginMutate) {
         toast.success("Logado com sucesso!");
+        if (rememberMe) {
+          addToLoginHistory(data.email);
+          setRememberedEmail(data.email);
+        } else {
+          setRememberedEmail(null);
+        }
       }
     } catch (error) {
       toast.error("Erro ao fazer login!");
@@ -84,7 +95,7 @@ export const Login = () => {
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="group/email space-y-2">
+            <div className="group/email relative space-y-2">
               <Label
                 htmlFor="email"
                 className={cn(
@@ -101,15 +112,34 @@ export const Login = () => {
                   type="email"
                   placeholder="mail@exemplo.com"
                   aria-invalid={!!errors.email}
-                  autoComplete="email"
                   {...register("email", {
                     required: "Email é obrigatório",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                       message: "Endereço de email inválido",
                     },
+                    onChange: () => setOpenSuggestions(true),
+                    onBlur: () =>
+                      setTimeout(() => setOpenSuggestions(false), 200),
                   })}
                 />
+                {openSuggestions && filteredHistory.length > 0 && (
+                  <div className="absolute top-full z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white shadow-lg">
+                    {filteredHistory.map((historyEmail) => (
+                      <div
+                        key={historyEmail}
+                        className="cursor-pointer px-4 py-2 text-sm leading-5 font-normal tracking-normal hover:bg-gray-100"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setValue("email", historyEmail);
+                          setOpenSuggestions(false);
+                        }}
+                      >
+                        {historyEmail}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <InputGroupAddon>
                   <Mail
                     className={cn(

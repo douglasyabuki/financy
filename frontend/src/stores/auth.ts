@@ -43,6 +43,11 @@ interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
+  // Persistence fields
+  rememberMe: boolean;
+  rememberedEmail: string | null;
+  loginHistory: string[];
+  // Actions
   signup: (data: RegisterInput) => Promise<boolean>;
   login: (data: LoginInput) => Promise<boolean>;
   updateProfile: (data: UpdateProfileInput) => Promise<boolean>;
@@ -52,6 +57,9 @@ interface AuthState {
   refreshSession: () => Promise<string | null>;
   client: ApolloClient | null;
   setClient: (client: ApolloClient) => void;
+  setRememberMe: (value: boolean) => void;
+  setRememberedEmail: (email: string | null) => void;
+  addToLoginHistory: (email: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -63,6 +71,15 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isCheckingAuth: true,
       client: null,
+      rememberMe: false,
+      rememberedEmail: null,
+      loginHistory: [],
+      setRememberMe: (value) => set({ rememberMe: value }),
+      setRememberedEmail: (email) => set({ rememberedEmail: email }),
+      addToLoginHistory: (email) =>
+        set((state) => ({
+          loginHistory: Array.from(new Set([...state.loginHistory, email])),
+        })),
       setClient: (client) => set({ client }),
       refreshSession: async () => {
         const { refreshToken } = get();
@@ -261,6 +278,9 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
+        rememberMe: state.rememberMe,
+        rememberedEmail: state.rememberedEmail,
+        loginHistory: state.loginHistory,
       }),
     },
   ),
