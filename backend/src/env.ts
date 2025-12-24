@@ -15,7 +15,7 @@ const envSchema = z.object({
     }),
   JWT_SECRET: z.string(),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
-  RESEND_API_KEY: z.string().default('re_123'),
+  RESEND_API_KEY: z.string().default('re_1234'),
 })
 
 export const env = envSchema.parse(process.env)
