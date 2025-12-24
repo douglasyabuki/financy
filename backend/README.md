@@ -42,6 +42,7 @@ This project must include a `.env.example` file with the necessary keys:
 > - CORS_ORIGINS=
 > - PORT=
 > - NODE_ENV=
+> - RESEND_API_KEY=
 
 If you add additional variables, remember to include them in the .env.example file.
 
