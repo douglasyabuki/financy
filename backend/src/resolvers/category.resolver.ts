@@ -1,4 +1,3 @@
-import { User } from '@prisma/client'
 import {
   Arg,
   FieldResolver,
@@ -31,7 +30,7 @@ export class CategoryResolver {
   @Mutation(() => CategoryModel)
   async createCategory(
     @Arg('data', () => CreateCategoryInput) data: CreateCategoryInput,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<CategoryModel> {
     return this.categoryService.createCategory(data, user.id)
   }
@@ -40,7 +39,7 @@ export class CategoryResolver {
   async updateCategory(
     @Arg('data', () => UpdateCategoryInput) data: UpdateCategoryInput,
     @Arg('id', () => String) id: string,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<CategoryModel> {
     return this.categoryService.updateCategory(id, data, user.id)
   }
@@ -48,21 +47,23 @@ export class CategoryResolver {
   @Mutation(() => Boolean)
   async deleteCategory(
     @Arg('id', () => String) id: string,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<boolean> {
     await this.categoryService.deleteCategory(id, user.id)
     return true
   }
 
   @Query(() => [CategoryModel])
-  async listCategories(@GraphqlUser() user: User): Promise<CategoryModel[]> {
+  async listCategories(
+    @GraphqlUser() user: UserModel
+  ): Promise<CategoryModel[]> {
     return this.categoryService.listCategories(user.id)
   }
 
   @Query(() => CategoryModel)
   async getCategory(
     @Arg('id', () => String) id: string,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<CategoryModel> {
     return this.categoryService.getCategory(id, user.id)
   }
@@ -75,7 +76,7 @@ export class CategoryResolver {
   @FieldResolver(() => [TransactionModel])
   async transactions(
     @Root() category: CategoryModel,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<TransactionModel[]> {
     return this.transactionService.listTransactionsByCategory(
       category.id,
@@ -86,7 +87,7 @@ export class CategoryResolver {
   @FieldResolver(() => Number)
   async transactionCount(
     @Root() category: CategoryModel,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<number> {
     return this.transactionService.countTransactionsByCategory(
       category.id,

@@ -1,4 +1,3 @@
-import { User } from '@prisma/client'
 import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
 import { UpdateUserInput } from '../dtos/input/user.input'
 import { UpdateProfileOutput } from '../dtos/output/user.output'
@@ -27,7 +26,7 @@ export class UserResolver {
 
   @Mutation(() => UpdateProfileOutput)
   async updateProfile(
-    @GraphqlUser() user: User,
+    @GraphqlUser() user: UserModel,
     @Arg('data', () => UpdateUserInput) data: UpdateUserInput
   ): Promise<UpdateProfileOutput> {
     if (!user) throw new Error('User not authenticated')

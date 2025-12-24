@@ -1,4 +1,4 @@
-import { TransactionType, User } from '@prisma/client'
+import { TransactionType } from '@prisma/client'
 import {
   Arg,
   FieldResolver,
@@ -38,7 +38,7 @@ export class TransactionResolver {
   async createTransaction(
     @Arg('data', () => CreateTransactionInput) data: CreateTransactionInput,
     @Arg('categoryId', () => String) categoryId: string,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<TransactionModel> {
     return this.transactionService.createTransaction(
       data,
@@ -52,7 +52,7 @@ export class TransactionResolver {
   async updateTransaction(
     @Arg('id', () => String) id: string,
     @Arg('data', () => UpdateTransactionInput) data: UpdateTransactionInput,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<TransactionModel> {
     return this.transactionService.updateTransaction(
       id,
@@ -65,14 +65,14 @@ export class TransactionResolver {
   @Mutation(() => TransactionModel)
   async deleteTransaction(
     @Arg('id', () => String) id: string,
-    @GraphqlUser() user: User
+    @GraphqlUser() user: UserModel
   ): Promise<TransactionModel> {
     return this.transactionService.deleteTransaction(id, user.id)
   }
 
   @Query(() => PaginatedTransactions)
   async listTransactions(
-    @GraphqlUser() user: User,
+    @GraphqlUser() user: UserModel,
     @Arg('limit', () => Number, { defaultValue: 10 }) limit: number,
     @Arg('offset', () => Number, { defaultValue: 0 }) offset: number,
     @Arg('filters', () => GetTransactionsFilterInput, { nullable: true })
@@ -87,12 +87,16 @@ export class TransactionResolver {
   }
 
   @Query(() => BalanceSummary)
-  async balanceSummary(@GraphqlUser() user: User): Promise<BalanceSummary> {
+  async balanceSummary(
+    @GraphqlUser() user: UserModel
+  ): Promise<BalanceSummary> {
     return this.transactionService.getBalanceSummary(user.id)
   }
 
   @Query(() => [CategorySummary])
-  async categorySummary(@GraphqlUser() user: User): Promise<CategorySummary[]> {
+  async categorySummary(
+    @GraphqlUser() user: UserModel
+  ): Promise<CategorySummary[]> {
     return this.transactionService.getCategorySummary(user.id)
   }
 
