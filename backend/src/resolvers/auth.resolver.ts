@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe'
+import { inject, injectable } from 'tsyringe'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import {
   ForgotPasswordInput,
@@ -13,7 +13,7 @@ import { AuthService } from '../services/auth.service'
 @injectable()
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(@inject(AuthService) private authService: AuthService) {}
 
   @Mutation(() => LoginOutput)
   async login(

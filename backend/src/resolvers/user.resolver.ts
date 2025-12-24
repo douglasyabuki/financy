@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe'
+import { inject, injectable } from 'tsyringe'
 import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
 import { UpdateUserInput } from '../dtos/input/user.input'
 import { UpdateProfileOutput } from '../dtos/output/user.output'
@@ -11,7 +11,7 @@ import { UserService } from '../services/user.service'
 @Resolver(() => UserModel)
 @UseMiddleware(IsAuthenticated)
 export class UserResolver {
-  constructor(private userService: UserService) {}
+  constructor(@inject(UserService) private userService: UserService) {}
 
   @Query(() => UserModel)
   async getUser(@Arg('id', () => String) id: string): Promise<UserModel> {

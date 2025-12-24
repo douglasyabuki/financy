@@ -1,6 +1,6 @@
 import { User } from '@prisma/client'
 import crypto from 'node:crypto'
-import { singleton } from 'tsyringe'
+import { inject, singleton } from 'tsyringe'
 import { prismaClient } from '../../prisma/prisma'
 import { LoginInput, RegisterInput } from '../dtos/input/auth.input'
 import { EmailService } from '../services/email.service'
@@ -9,7 +9,7 @@ import { signJwt, verifyJwt } from '../utils/jwt'
 
 @singleton()
 export class AuthService {
-  constructor(private emailService: EmailService) {}
+  constructor(@inject(EmailService) private emailService: EmailService) {}
 
   async login(data: LoginInput) {
     const user = await prismaClient.user.findUnique({

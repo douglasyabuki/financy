@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe'
+import { inject, injectable } from 'tsyringe'
 import {
   Arg,
   FieldResolver,
@@ -26,9 +26,9 @@ import { UserService } from '../services/user.service'
 @UseMiddleware(IsAuthenticated)
 export class CategoryResolver {
   constructor(
-    private categoryService: CategoryService,
-    private transactionService: TransactionService,
-    private userService: UserService
+    @inject(CategoryService) private categoryService: CategoryService,
+    @inject(TransactionService) private transactionService: TransactionService,
+    @inject(UserService) private userService: UserService
   ) {}
 
   @Mutation(() => CategoryModel)

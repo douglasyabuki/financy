@@ -189,7 +189,6 @@ export class TransactionService {
       if (filters.description) {
         where.description = {
           contains: filters.description,
-          mode: 'insensitive',
         }
       }
       if (filters.month && filters.year) {
