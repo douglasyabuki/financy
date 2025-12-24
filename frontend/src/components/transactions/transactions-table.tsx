@@ -160,7 +160,11 @@ export const TransactionsTable = ({
           <TableCell colSpan={6} className="px-2 lg:px-4 xl:px-6">
             <div className="flex w-full items-center justify-between">
               <p className="text-sm leading-4.5 tracking-normal text-gray-700">
-                <b className="semibold">{offset + 1}</b> a{" "}
+                {totalCount > 1 && (
+                  <>
+                    <b className="semibold">{offset + 1}</b> a{" "}
+                  </>
+                )}
                 <b className="semibold">
                   {Math.min(offset + limit, totalCount)}
                 </b>{" "}
