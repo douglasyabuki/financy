@@ -1,23 +1,42 @@
-import { PrismaClient } from '@prisma/client'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
+import { Category, Prisma } from '@prisma/client'
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { CategoryColor } from '../models/category.model'
 import { CategoryService } from './category.service'
 
 // Mock Prisma Client
 vi.mock('../../prisma/prisma', () => ({
-  prismaClient: mockDeep<PrismaClient>(),
+  prismaClient: {
+    category: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      findMany: vi.fn(),
+    },
+  },
 }))
 
-const prismaMock = prismaClient as any
+const prismaMock = prismaClient as unknown as {
+  category: {
+    create: MockInstance<(args: Prisma.CategoryCreateArgs) => Promise<Category>>
+    findUnique: MockInstance<
+      (args: Prisma.CategoryFindUniqueArgs) => Promise<Category | null>
+    >
+    update: MockInstance<(args: Prisma.CategoryUpdateArgs) => Promise<Category>>
+    delete: MockInstance<(args: Prisma.CategoryDeleteArgs) => Promise<Category>>
+    findMany: MockInstance<
+      (args: Prisma.CategoryFindManyArgs) => Promise<Category[]>
+    >
+  }
+}
 
 describe('CategoryService', () => {
   let categoryService: CategoryService
 
   beforeEach(() => {
     categoryService = new CategoryService()
-    mockReset(prismaMock)
+    vi.clearAllMocks()
   })
 
   describe('createCategory', () => {
@@ -85,11 +104,7 @@ describe('CategoryService', () => {
       prismaMock.category.findUnique.mockResolvedValue(null)
 
       await expect(
-        categoryService.updateCategory(
-          'cat-1',
-          { title: 'Meals' } as any,
-          'user-1'
-        )
+        categoryService.updateCategory('cat-1', { title: 'Meals' }, 'user-1')
       ).rejects.toThrow('Category not found')
     })
 
@@ -107,11 +122,7 @@ describe('CategoryService', () => {
       prismaMock.category.findUnique.mockResolvedValue(mockCategory)
 
       await expect(
-        categoryService.updateCategory(
-          'cat-1',
-          { title: 'Meals' } as any,
-          'user-1'
-        )
+        categoryService.updateCategory('cat-1', { title: 'Meals' }, 'user-1')
       ).rejects.toThrow('Unauthorized')
     })
   })

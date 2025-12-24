@@ -1,8 +1,7 @@
-import { User } from '@prisma/client'
+import { Transaction, User } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import 'reflect-metadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
 import {
   CreateTransactionInput,
   UpdateTransactionInput,
@@ -13,6 +12,9 @@ import { CategoryColor, CategoryModel } from '../models/category.model'
 import { CategoryService } from '../services/category.service'
 import { TransactionService } from '../services/transaction.service'
 import { UserService } from '../services/user.service'
+import { makeCategory } from '../test/factories/make-category'
+import { makeTransaction } from '../test/factories/make-transaction'
+import { makeUser } from '../test/factories/make-user'
 import { TransactionResolver } from './transaction.resolver'
 
 vi.mock('../services/transaction.service')
@@ -21,33 +23,56 @@ vi.mock('../services/user.service')
 
 describe('TransactionResolver', () => {
   let resolver: TransactionResolver
-  const transactionServiceMock = mockDeep<TransactionService>()
-  const categoryServiceMock = mockDeep<CategoryService>()
-  const userServiceMock = mockDeep<UserService>()
 
-  const mockUser = { id: 'user-1', email: 'test@test.com' } as User
-  const mockTransaction = {
-    id: 'tx-1',
-    description: 'Groceries',
-    amount: '100.00',
-    type: 'EXPENSE',
-    date: new Date(),
-    userId: 'user-1',
-    categoryId: 'cat-1',
-  } as any
+  const transactionServiceMock = {
+    createTransaction: vi.fn(),
+    updateTransaction: vi.fn(),
+    deleteTransaction: vi.fn(),
+    listTransactions: vi.fn(),
+    getBalanceSummary: vi.fn(),
+    getCategorySummary: vi.fn(),
+  }
+  const categoryServiceMock = {
+    getCategory: vi.fn(),
+  }
+  const userServiceMock = {
+    findUser: vi.fn(),
+  }
 
-  beforeEach(() => {
-    mockReset(transactionServiceMock)
-    mockReset(categoryServiceMock)
-    mockReset(userServiceMock)
+  let mockUser: User
+  let mockTransaction: Transaction
+  let mockCategory: CategoryModel
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+
+    mockUser = await makeUser()
+    const category = await makeCategory({
+      userId: mockUser.id,
+      color: CategoryColor.RED,
+    })
+    mockCategory = {
+      ...category,
+      color: category.color as CategoryColor,
+      description: category.description ?? undefined,
+      transactionCount: 0,
+      transactions: [],
+    } as CategoryModel
+
+    mockTransaction = await makeTransaction({
+      userId: mockUser.id,
+      categoryId: mockCategory.id,
+    })
 
     vi.mocked(TransactionService).mockImplementation(
-      () => transactionServiceMock as any
+      () => transactionServiceMock as unknown as TransactionService
     )
     vi.mocked(CategoryService).mockImplementation(
-      () => categoryServiceMock as any
+      () => categoryServiceMock as unknown as CategoryService
     )
-    vi.mocked(UserService).mockImplementation(() => userServiceMock as any)
+    vi.mocked(UserService).mockImplementation(
+      () => userServiceMock as unknown as UserService
+    )
 
     resolver = new TransactionResolver()
   })
@@ -59,7 +84,7 @@ describe('TransactionResolver', () => {
       type: 'EXPENSE',
       date: '2023-01-01',
     }
-    const categoryId = 'cat-1'
+    const categoryId = mockCategory.id
     transactionServiceMock.createTransaction.mockResolvedValue(mockTransaction)
 
     const result = await resolver.createTransaction(input, categoryId, mockUser)
@@ -75,7 +100,7 @@ describe('TransactionResolver', () => {
 
   it('should update a transaction', async () => {
     const input: UpdateTransactionInput = { description: 'Updated' }
-    const txId = 'tx-1'
+    const txId = mockTransaction.id
     transactionServiceMock.updateTransaction.mockResolvedValue({
       ...mockTransaction,
       description: 'Updated',
@@ -93,7 +118,7 @@ describe('TransactionResolver', () => {
   })
 
   it('should delete a transaction', async () => {
-    const txId = 'tx-1'
+    const txId = mockTransaction.id
     transactionServiceMock.deleteTransaction.mockResolvedValue(mockTransaction)
 
     const result = await resolver.deleteTransaction(txId, mockUser)
@@ -106,7 +131,7 @@ describe('TransactionResolver', () => {
   })
 
   it('should list transactions', async () => {
-    const output = { items: [mockTransaction], totalCount: 1 } as any
+    const output = { items: [mockTransaction], totalCount: 1 }
     transactionServiceMock.listTransactions.mockResolvedValue(output)
 
     const result = await resolver.listTransactions(mockUser, 10, 0)
@@ -137,20 +162,9 @@ describe('TransactionResolver', () => {
   })
 
   it('should get category summary', async () => {
-    const categoryModel: CategoryModel = {
-      id: 'cat-1',
-      title: 'Food',
-      description: 'Food expenses',
-      icon: 'Utensils',
-      color: CategoryColor.GREEN,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: mockUser.id,
-    }
-
     const summary: CategorySummary[] = [
       {
-        category: categoryModel,
+        category: mockCategory,
         count: 5,
         totalAmount: new Decimal(100),
       },
@@ -166,7 +180,7 @@ describe('TransactionResolver', () => {
   })
 
   it('should resolve user field', async () => {
-    userServiceMock.findUser.mockResolvedValue(mockUser as any)
+    userServiceMock.findUser.mockResolvedValue(mockUser)
 
     const result = await resolver.user(mockTransaction)
 
@@ -177,8 +191,7 @@ describe('TransactionResolver', () => {
   })
 
   it('should resolve category field', async () => {
-    const mockCategory = { id: 'cat-1' }
-    categoryServiceMock.getCategory.mockResolvedValue(mockCategory as any)
+    categoryServiceMock.getCategory.mockResolvedValue(mockCategory)
 
     const result = await resolver.category(mockTransaction)
 

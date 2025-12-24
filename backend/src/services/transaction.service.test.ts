@@ -1,46 +1,90 @@
-import { PrismaClient, Transaction, TransactionType } from '@prisma/client'
+import { Category, Prisma, Transaction, TransactionType } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
+import { makeCategory } from '../test/factories/make-category'
+import { makeTransaction } from '../test/factories/make-transaction'
 import { TransactionService } from './transaction.service'
 
 // Mock Prisma Client
 vi.mock('../../prisma/prisma', () => ({
-  prismaClient: mockDeep<PrismaClient>(),
+  prismaClient: {
+    transaction: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      findMany: vi.fn(),
+      count: vi.fn(),
+      groupBy: vi.fn(),
+      aggregate: vi.fn(),
+    },
+    category: {
+      findMany: vi.fn(),
+    },
+  },
 }))
 
-const prismaMock = prismaClient as any
+const prismaMock = prismaClient as unknown as {
+  transaction: {
+    create: MockInstance<
+      (args: Prisma.TransactionCreateArgs) => Promise<Transaction>
+    >
+    findUnique: MockInstance<
+      (args: Prisma.TransactionFindUniqueArgs) => Promise<Transaction | null>
+    >
+    update: MockInstance<
+      (args: Prisma.TransactionUpdateArgs) => Promise<Transaction>
+    >
+    delete: MockInstance<
+      (args: Prisma.TransactionDeleteArgs) => Promise<Transaction>
+    >
+    findMany: MockInstance<
+      (args: Prisma.TransactionFindManyArgs) => Promise<Transaction[]>
+    >
+    count: MockInstance<(args: Prisma.TransactionCountArgs) => Promise<number>>
+    groupBy: MockInstance<
+      (args: Prisma.TransactionGroupByArgs) => Promise<unknown[]>
+    >
+    aggregate: MockInstance<
+      (args: Prisma.TransactionAggregateArgs) => Promise<unknown>
+    >
+  }
+  category: {
+    findMany: MockInstance<
+      (args: Prisma.CategoryFindManyArgs) => Promise<Category[]>
+    >
+  }
+}
 
 describe('TransactionService', () => {
   let transactionService: TransactionService
 
   beforeEach(() => {
     transactionService = new TransactionService()
-    mockReset(prismaMock)
+    vi.clearAllMocks()
   })
 
   describe('createTransaction', () => {
     it('should create a transaction successfully', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         description: 'Test Tx',
         amount: new Decimal(100),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
         userId: 'user-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
 
-      prismaMock.transaction.create.mockResolvedValue(mockTx)
+      prismaMock.transaction.create.mockResolvedValue(
+        mockTx as unknown as Transaction
+      )
 
       const result = await transactionService.createTransaction(
         {
           description: 'Test Tx',
           amount: '100',
-          date: new Date().toISOString(),
+          date: mockTx.date.toISOString(),
           type: 'expense',
         },
         'user-1',
@@ -55,17 +99,14 @@ describe('TransactionService', () => {
 
   describe('updateTransaction', () => {
     it('should update transaction if user owns it', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         userId: 'user-1',
         description: 'Updated Tx',
         amount: new Decimal(200),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
 
       prismaMock.transaction.findUnique.mockResolvedValue(mockTx)
       prismaMock.transaction.update.mockResolvedValue(mockTx)
@@ -109,17 +150,14 @@ describe('TransactionService', () => {
     })
 
     it('should throw error if user does not own transaction', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         userId: 'other-user',
         description: 'Tx',
         amount: new Decimal(100),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
       prismaMock.transaction.findUnique.mockResolvedValue(mockTx)
 
       await expect(
@@ -140,17 +178,14 @@ describe('TransactionService', () => {
 
   describe('deleteTransaction', () => {
     it('should delete transaction if user owns it', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         userId: 'user-1',
         description: 'Tx',
         amount: new Decimal(100),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
       prismaMock.transaction.findUnique.mockResolvedValue(mockTx)
       prismaMock.transaction.delete.mockResolvedValue(mockTx)
 
@@ -170,17 +205,14 @@ describe('TransactionService', () => {
     })
 
     it('should throw error if user does not own transaction (IDOR Check)', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         userId: 'other-user',
         description: 'Tx',
         amount: new Decimal(100),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
       prismaMock.transaction.findUnique.mockResolvedValue(mockTx)
 
       await expect(
@@ -191,17 +223,14 @@ describe('TransactionService', () => {
 
   describe('listTransactions', () => {
     it('should return paginated transactions', async () => {
-      const mockTx: Transaction = {
+      const mockTx = await makeTransaction({
         id: 'tx-1',
         userId: 'user-1',
         description: 'Tx',
         amount: new Decimal(100),
         type: TransactionType.expense,
-        date: new Date(),
         categoryId: 'cat-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      })
       prismaMock.transaction.findMany.mockResolvedValue([mockTx])
       prismaMock.transaction.count.mockResolvedValue(1)
 
@@ -242,20 +271,24 @@ describe('TransactionService', () => {
           _sum: { amount: new Decimal(500) },
         },
       ]
-      prismaMock.transaction.groupBy.mockResolvedValue(mockAggregations as any)
+      prismaMock.transaction.groupBy.mockResolvedValue(
+        mockAggregations as unknown as Prisma.GetTransactionGroupByPayload<{
+          by: ['categoryId', 'type']
+          _count: { id: true }
+          _sum: { amount: true }
+        }>[]
+      )
 
       // Mock categories result
       const mockCategories = [
-        {
+        await makeCategory({
           id: 'cat-1',
           title: 'Food',
           description: 'Desc',
           color: 'red',
           icon: 'utensils',
           userId: 'user-1',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+        }),
       ]
       prismaMock.category.findMany.mockResolvedValue(mockCategories)
 
@@ -270,11 +303,18 @@ describe('TransactionService', () => {
 
   describe('getBalanceSummary', () => {
     it('should calculate balance correctly', async () => {
+      const mockSum = (amount: number) =>
+        ({
+          _sum: { amount: new Decimal(amount) },
+        } as unknown as Prisma.GetTransactionAggregateType<{
+          _sum: { amount: true }
+        }>)
+
       prismaMock.transaction.aggregate
-        .mockResolvedValueOnce({ _sum: { amount: new Decimal(1000) } } as any) // Total Income
-        .mockResolvedValueOnce({ _sum: { amount: new Decimal(500) } } as any) // Total Expense
-        .mockResolvedValueOnce({ _sum: { amount: new Decimal(200) } } as any) // Month Income
-        .mockResolvedValueOnce({ _sum: { amount: new Decimal(100) } } as any) // Month Expense
+        .mockResolvedValueOnce(mockSum(1000)) // Total Income
+        .mockResolvedValueOnce(mockSum(500)) // Total Expense
+        .mockResolvedValueOnce(mockSum(200)) // Month Income
+        .mockResolvedValueOnce(mockSum(100)) // Month Expense
 
       const result = await transactionService.getBalanceSummary('user-1')
 

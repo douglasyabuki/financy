@@ -1,32 +1,36 @@
+import { User } from '@prisma/client'
 import 'reflect-metadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
 import { UpdateUserInput } from '../dtos/input/user.input'
 import { UserService } from '../services/user.service'
+import { makeUser } from '../test/factories/make-user'
 import { UserResolver } from './user.resolver'
 
 vi.mock('../services/user.service')
 
 describe('UserResolver', () => {
   let resolver: UserResolver
-  const userServiceMock = mockDeep<UserService>()
+  const userServiceMock = {
+    findUser: vi.fn(),
+    updateUser: vi.fn(),
+  }
 
-  const mockUser = {
-    id: 'user-1',
-    email: 'test@test.com',
-    name: 'Test User',
-  } as any
+  let mockUser: User
 
-  beforeEach(() => {
-    mockReset(userServiceMock)
-    vi.mocked(UserService).mockImplementation(() => userServiceMock as any)
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    mockUser = await makeUser()
+
+    vi.mocked(UserService).mockImplementation(
+      () => userServiceMock as unknown as UserService
+    )
     resolver = new UserResolver()
   })
 
   it('should get a user', async () => {
     userServiceMock.findUser.mockResolvedValue(mockUser)
-    const result = await resolver.getUser('user-1')
-    expect(userServiceMock.findUser).toHaveBeenCalledWith('user-1')
+    const result = await resolver.getUser(mockUser.id)
+    expect(userServiceMock.findUser).toHaveBeenCalledWith(mockUser.id)
     expect(result).toEqual(mockUser)
   })
 
@@ -35,11 +39,11 @@ describe('UserResolver', () => {
     userServiceMock.updateUser.mockResolvedValue({
       ...mockUser,
       name: 'Updated Name',
-    } as any)
+    })
 
-    const result = await resolver.updateUser('user-1', input)
+    const result = await resolver.updateUser(mockUser.id, input)
 
-    expect(userServiceMock.updateUser).toHaveBeenCalledWith('user-1', input)
+    expect(userServiceMock.updateUser).toHaveBeenCalledWith(mockUser.id, input)
     expect(result.name).toBe('Updated Name')
   })
 
@@ -48,7 +52,7 @@ describe('UserResolver', () => {
     userServiceMock.updateUser.mockResolvedValue({
       ...mockUser,
       name: 'Profile Name',
-    } as any)
+    })
 
     const result = await resolver.updateProfile(mockUser, input)
 
@@ -58,7 +62,7 @@ describe('UserResolver', () => {
 
   it('should throw error if user not authenticated for updateProfile', async () => {
     const input: UpdateUserInput = { name: 'Profile Name' }
-    await expect(resolver.updateProfile(null as any, input)).rejects.toThrow(
+    await expect(resolver.updateProfile(null, input)).rejects.toThrow(
       'User not authenticated'
     )
   })

@@ -1,15 +1,17 @@
-import { User } from '@prisma/client'
+import { Category, User } from '@prisma/client'
 import 'reflect-metadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
 import {
   CreateCategoryInput,
   UpdateCategoryInput,
 } from '../dtos/input/category.input'
-import { CategoryColor } from '../models/category.model'
+import { CategoryColor, CategoryModel } from '../models/category.model'
 import { CategoryService } from '../services/category.service'
 import { TransactionService } from '../services/transaction.service'
 import { UserService } from '../services/user.service'
+import { makeCategory } from '../test/factories/make-category'
+import { makeTransaction } from '../test/factories/make-transaction'
+import { makeUser } from '../test/factories/make-user'
 import { CategoryResolver } from './category.resolver'
 
 vi.mock('../services/category.service')
@@ -18,32 +20,43 @@ vi.mock('../services/user.service')
 
 describe('CategoryResolver', () => {
   let resolver: CategoryResolver
-  const categoryServiceMock = mockDeep<CategoryService>()
-  const transactionServiceMock = mockDeep<TransactionService>()
-  const userServiceMock = mockDeep<UserService>()
 
-  const mockUser = { id: 'user-1', email: 'test@test.com' } as User
-  const mockCategory = {
-    id: 'cat-1',
-    title: 'Test Category',
-    userId: 'user-1',
-    description: 'desc',
-    icon: 'icon',
-    color: 'red',
-  } as any
+  const categoryServiceMock = {
+    createCategory: vi.fn(),
+    updateCategory: vi.fn(),
+    deleteCategory: vi.fn(),
+    listCategories: vi.fn(),
+    getCategory: vi.fn(),
+  }
+  const transactionServiceMock = {
+    listTransactionsByCategory: vi.fn(),
+    countTransactionsByCategory: vi.fn(),
+  }
+  const userServiceMock = {
+    findUser: vi.fn(),
+  }
 
-  beforeEach(() => {
-    mockReset(categoryServiceMock)
-    mockReset(transactionServiceMock)
-    mockReset(userServiceMock)
+  let mockUser: User
+  let mockCategory: Category
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+
+    mockUser = await makeUser()
+    mockCategory = await makeCategory({
+      userId: mockUser.id,
+      color: CategoryColor.RED,
+    })
 
     vi.mocked(CategoryService).mockImplementation(
-      () => categoryServiceMock as any
+      () => categoryServiceMock as unknown as CategoryService
     )
     vi.mocked(TransactionService).mockImplementation(
-      () => transactionServiceMock as any
+      () => transactionServiceMock as unknown as TransactionService
     )
-    vi.mocked(UserService).mockImplementation(() => userServiceMock as any)
+    vi.mocked(UserService).mockImplementation(
+      () => userServiceMock as unknown as UserService
+    )
 
     resolver = new CategoryResolver()
   })
@@ -55,7 +68,10 @@ describe('CategoryResolver', () => {
       icon: 'icon',
       color: CategoryColor.RED,
     }
-    categoryServiceMock.createCategory.mockResolvedValue(mockCategory)
+    categoryServiceMock.createCategory.mockResolvedValue({
+      ...mockCategory,
+      color: mockCategory.color as CategoryColor,
+    })
 
     const result = await resolver.createCategory(input, mockUser)
 
@@ -68,10 +84,11 @@ describe('CategoryResolver', () => {
 
   it('should update a category', async () => {
     const input: UpdateCategoryInput = { title: 'Updated Category' }
-    const categoryId = 'cat-1'
+    const categoryId = mockCategory.id
     categoryServiceMock.updateCategory.mockResolvedValue({
       ...mockCategory,
       title: 'Updated Category',
+      color: mockCategory.color as CategoryColor,
     })
 
     const result = await resolver.updateCategory(input, categoryId, mockUser)
@@ -85,8 +102,11 @@ describe('CategoryResolver', () => {
   })
 
   it('should delete a category', async () => {
-    const categoryId = 'cat-1'
-    categoryServiceMock.deleteCategory.mockResolvedValue(mockCategory)
+    const categoryId = mockCategory.id
+    categoryServiceMock.deleteCategory.mockResolvedValue({
+      ...mockCategory,
+      color: mockCategory.color as CategoryColor,
+    })
 
     const result = await resolver.deleteCategory(categoryId, mockUser)
 
@@ -98,7 +118,9 @@ describe('CategoryResolver', () => {
   })
 
   it('should list categories', async () => {
-    categoryServiceMock.listCategories.mockResolvedValue([mockCategory])
+    categoryServiceMock.listCategories.mockResolvedValue([
+      { ...mockCategory, color: mockCategory.color as CategoryColor },
+    ])
 
     const result = await resolver.listCategories(mockUser)
 
@@ -108,8 +130,11 @@ describe('CategoryResolver', () => {
   })
 
   it('should get a category', async () => {
-    const categoryId = 'cat-1'
-    categoryServiceMock.getCategory.mockResolvedValue(mockCategory)
+    const categoryId = mockCategory.id
+    categoryServiceMock.getCategory.mockResolvedValue({
+      ...mockCategory,
+      color: mockCategory.color as CategoryColor,
+    })
 
     const result = await resolver.getCategory(categoryId, mockUser)
 
@@ -121,21 +146,28 @@ describe('CategoryResolver', () => {
   })
 
   it('should resolve user field', async () => {
-    userServiceMock.findUser.mockResolvedValue(mockUser as any)
+    userServiceMock.findUser.mockResolvedValue(mockUser)
 
-    const result = await resolver.user(mockCategory)
-
+    const result = await resolver.user(mockCategory as unknown as CategoryModel)
     expect(userServiceMock.findUser).toHaveBeenCalledWith(mockCategory.userId)
     expect(result).toEqual(mockUser)
   })
 
   it('should resolve transactions field', async () => {
-    const mockTransactions: any[] = [{ id: 'tx-1' }]
+    const mockTransactions = [
+      await makeTransaction({
+        userId: mockUser.id,
+        categoryId: mockCategory.id,
+      }),
+    ]
     transactionServiceMock.listTransactionsByCategory.mockResolvedValue(
       mockTransactions
     )
 
-    const result = await resolver.transactions(mockCategory, mockUser)
+    const result = await resolver.transactions(
+      mockCategory as unknown as CategoryModel,
+      mockUser
+    )
 
     expect(
       transactionServiceMock.listTransactionsByCategory
@@ -146,7 +178,10 @@ describe('CategoryResolver', () => {
   it('should resolve transactionCount field', async () => {
     transactionServiceMock.countTransactionsByCategory.mockResolvedValue(5)
 
-    const result = await resolver.transactionCount(mockCategory, mockUser)
+    const result = await resolver.transactionCount(
+      mockCategory as unknown as CategoryModel,
+      mockUser
+    )
 
     expect(
       transactionServiceMock.countTransactionsByCategory

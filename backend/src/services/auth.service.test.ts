@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Prisma, User } from '@prisma/client'
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { comparePassword, hashPassword } from '../utils/hash'
 import { AuthService } from './auth.service'
@@ -13,6 +14,16 @@ vi.mock('../../prisma/prisma', () => ({
     },
   },
 }))
+
+const prismaMock = prismaClient as unknown as {
+  user: {
+    findUnique: MockInstance<
+      (args: Prisma.UserFindUniqueArgs) => Promise<User | null>
+    >
+    create: MockInstance<(args: Prisma.UserCreateArgs) => Promise<User>>
+    update: MockInstance<(args: Prisma.UserUpdateArgs) => Promise<User>>
+  }
+}
 
 // Mock hash utils
 vi.mock('../utils/hash', () => ({
@@ -35,11 +46,15 @@ describe('AuthService', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        resetCode: null,
+        resetCodeExpiry: null,
       }
 
-      ;(prismaClient.user.findUnique as any).mockResolvedValue(null)
-      ;(hashPassword as any).mockResolvedValue('hashed-password')
-      ;(prismaClient.user.create as any).mockResolvedValue(mockUser)
+      prismaMock.user.findUnique.mockResolvedValue(null)
+      vi.mocked(hashPassword).mockResolvedValue('hashed-password')
+      prismaMock.user.create.mockResolvedValue(mockUser as unknown as User)
 
       // Pass object as expected by the service
       const result = await authService.register({
@@ -58,9 +73,9 @@ describe('AuthService', () => {
     })
 
     it('should throw error if email already exists', async () => {
-      ;(prismaClient.user.findUnique as any).mockResolvedValue({
+      prismaMock.user.findUnique.mockResolvedValue({
         id: 'existing-user',
-      })
+      } as unknown as User)
 
       // Pass object as expected by the service
       await expect(
@@ -77,13 +92,18 @@ describe('AuthService', () => {
     it('should return token and user for valid credentials', async () => {
       const mockUser = {
         id: 'user-1',
+        name: 'Test User',
         email: 'test@example.com',
         password: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        resetCode: null,
+        resetCodeExpiry: null,
       }
 
-      ;(prismaClient.user.findUnique as any).mockResolvedValue(mockUser)
-      ;(comparePassword as any).mockResolvedValue(true)
-      ;(prismaClient.user.update as any).mockResolvedValue(mockUser)
+      prismaMock.user.findUnique.mockResolvedValue(mockUser as unknown as User)
+      vi.mocked(comparePassword).mockResolvedValue(true)
+      prismaMock.user.update.mockResolvedValue(mockUser as unknown as User)
 
       // Pass object as expected by the service
       const result = await authService.login({
@@ -103,7 +123,7 @@ describe('AuthService', () => {
     })
 
     it('should throw error for invalid email', async () => {
-      ;(prismaClient.user.findUnique as any).mockResolvedValue(null)
+      prismaMock.user.findUnique.mockResolvedValue(null)
 
       await expect(
         authService.login({
@@ -116,12 +136,17 @@ describe('AuthService', () => {
     it('should throw error for invalid password', async () => {
       const mockUser = {
         id: 'user-1',
+        name: 'Test User',
         email: 'test@example.com',
         password: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        resetCode: null,
+        resetCodeExpiry: null,
       }
 
-      ;(prismaClient.user.findUnique as any).mockResolvedValue(mockUser)
-      ;(comparePassword as any).mockResolvedValue(false)
+      prismaMock.user.findUnique.mockResolvedValue(mockUser as unknown as User)
+      vi.mocked(comparePassword).mockResolvedValue(false)
 
       await expect(
         authService.login({

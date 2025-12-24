@@ -1,22 +1,33 @@
-import { PrismaClient, User } from '@prisma/client'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
+import { Prisma, User } from '@prisma/client'
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { UserService } from './user.service'
 
 // Mock Prisma Client
 vi.mock('../../prisma/prisma', () => ({
-  prismaClient: mockDeep<PrismaClient>(),
+  prismaClient: {
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+  },
 }))
 
-const prismaMock = prismaClient as any
+const prismaMock = prismaClient as unknown as {
+  user: {
+    findUnique: MockInstance<
+      (args: Prisma.UserFindUniqueArgs) => Promise<User | null>
+    >
+    update: MockInstance<(args: Prisma.UserUpdateArgs) => Promise<User>>
+  }
+}
 
 describe('UserService', () => {
   let userService: UserService
 
   beforeEach(() => {
     userService = new UserService()
-    mockReset(prismaMock)
+    vi.clearAllMocks()
   })
 
   describe('findUser', () => {

@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockDeep, mockReset } from 'vitest-mock-extended'
 import {
   ForgotPasswordInput,
   LoginInput,
@@ -9,27 +8,27 @@ import {
   ResetPasswordInput,
 } from '../dtos/input/auth.input'
 import { AuthService } from '../services/auth.service'
+import { makeUser } from '../test/factories/make-user'
 import { AuthResolver } from './auth.resolver'
 
 vi.mock('../services/auth.service')
 
 describe('AuthResolver', () => {
   let resolver: AuthResolver
-  const authServiceMock = mockDeep<AuthService>()
+  const authServiceMock = {
+    login: vi.fn(),
+    register: vi.fn(),
+    refreshToken: vi.fn(),
+    forgotPassword: vi.fn(),
+    resetPassword: vi.fn(),
+  }
 
   beforeEach(() => {
-    mockReset(authServiceMock)
+    vi.clearAllMocks()
     vi.mocked(AuthService).mockImplementation(
       () => authServiceMock as unknown as AuthService
     )
     resolver = new AuthResolver()
-    // Manually inject the mock if the constructor logic was complex,
-    // but since the resolver creates it in the property initializer,
-    // the mockImplementation above ensures 'new AuthService()' returns our mock.
-    // However, since the property is private and initialized at construction,
-    // we rely on the mock factory.
-    // To be absolutely sure, we can also cast and assign if we wanted to access private props,
-    // but the module mock is the standard way.
   })
 
   it('should call authService.login', async () => {
@@ -40,9 +39,9 @@ describe('AuthResolver', () => {
     const output = {
       token: 'token',
       refreshToken: 'refresh-token',
-      user: { id: '1', email: 'test@example.com', name: 'Test' } as any,
+      user: await makeUser({ email: 'test@example.com' }),
     }
-    authServiceMock.login.mockResolvedValue(output as any)
+    authServiceMock.login.mockResolvedValue(output)
 
     const result = await resolver.login(input)
 
@@ -59,7 +58,7 @@ describe('AuthResolver', () => {
     const output = {
       token: 'token',
       refreshToken: 'refresh-token',
-      user: { id: '1', email: 'test@example.com', name: 'Test' } as any,
+      user: await makeUser({ email: 'test@example.com', name: 'Test' }),
     }
     authServiceMock.register.mockResolvedValue(output)
 
@@ -74,9 +73,9 @@ describe('AuthResolver', () => {
     const output = {
       token: 'new-token',
       refreshToken: 'new-refresh-token',
-      user: { id: '1', email: 'test@example.com', name: 'Test' } as any,
+      user: await makeUser({ email: 'test@example.com' }),
     }
-    authServiceMock.refreshToken.mockResolvedValue(output as any)
+    authServiceMock.refreshToken.mockResolvedValue(output)
 
     const result = await resolver.refreshToken(input)
 
