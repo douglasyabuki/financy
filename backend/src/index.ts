@@ -3,6 +3,7 @@ import { expressMiddleware } from '@as-integrations/express5'
 import cors from 'cors'
 import express from 'express'
 import 'reflect-metadata'
+import { container } from 'tsyringe'
 import { buildSchema } from 'type-graphql'
 import { env } from './env'
 import { buildContext } from './graphql/context'
@@ -43,6 +44,7 @@ async function bootstrap() {
       TransactionResolver,
     ],
     emitSchemaFile: './schema.graphql',
+    container: { get: cls => container.resolve(cls) },
   })
 
   const server = new ApolloServer({

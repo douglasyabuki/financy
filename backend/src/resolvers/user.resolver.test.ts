@@ -21,10 +21,7 @@ describe('UserResolver', () => {
     vi.clearAllMocks()
     mockUser = await makeUser()
 
-    vi.mocked(UserService).mockImplementation(
-      () => userServiceMock as unknown as UserService
-    )
-    resolver = new UserResolver()
+    resolver = new UserResolver(userServiceMock as unknown as UserService)
   })
 
   it('should get a user', async () => {

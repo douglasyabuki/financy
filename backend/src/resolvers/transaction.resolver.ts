@@ -1,4 +1,5 @@
 import { TransactionType } from '@prisma/client'
+import { injectable } from 'tsyringe'
 import {
   Arg,
   FieldResolver,
@@ -27,12 +28,15 @@ import { CategoryService } from '../services/category.service'
 import { TransactionService } from '../services/transaction.service'
 import { UserService } from '../services/user.service'
 
+@injectable()
 @Resolver(() => TransactionModel)
 @UseMiddleware(IsAuthenticated)
 export class TransactionResolver {
-  private transactionService = new TransactionService()
-  private userService = new UserService()
-  private categoryService = new CategoryService()
+  constructor(
+    private transactionService: TransactionService,
+    private userService: UserService,
+    private categoryService: CategoryService
+  ) {}
 
   @Mutation(() => TransactionModel)
   async createTransaction(

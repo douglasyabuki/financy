@@ -64,17 +64,11 @@ describe('TransactionResolver', () => {
       categoryId: mockCategory.id,
     })
 
-    vi.mocked(TransactionService).mockImplementation(
-      () => transactionServiceMock as unknown as TransactionService
+    resolver = new TransactionResolver(
+      transactionServiceMock as unknown as TransactionService,
+      userServiceMock as unknown as UserService,
+      categoryServiceMock as unknown as CategoryService
     )
-    vi.mocked(CategoryService).mockImplementation(
-      () => categoryServiceMock as unknown as CategoryService
-    )
-    vi.mocked(UserService).mockImplementation(
-      () => userServiceMock as unknown as UserService
-    )
-
-    resolver = new TransactionResolver()
   })
 
   it('should create a transaction', async () => {

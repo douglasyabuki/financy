@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { EmailService } from './email.service'
 

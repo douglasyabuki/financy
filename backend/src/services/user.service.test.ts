@@ -1,4 +1,5 @@
 import { Prisma, User } from '@prisma/client'
+import 'reflect-metadata'
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { UserService } from './user.service'

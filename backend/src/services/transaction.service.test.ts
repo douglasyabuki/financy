@@ -1,5 +1,6 @@
 import { Category, Prisma, Transaction, TransactionType } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import 'reflect-metadata'
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { makeCategory } from '../test/factories/make-category'

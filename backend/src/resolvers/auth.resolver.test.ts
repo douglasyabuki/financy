@@ -25,10 +25,7 @@ describe('AuthResolver', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(AuthService).mockImplementation(
-      () => authServiceMock as unknown as AuthService
-    )
-    resolver = new AuthResolver()
+    resolver = new AuthResolver(authServiceMock as unknown as AuthService)
   })
 
   it('should call authService.login', async () => {

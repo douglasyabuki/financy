@@ -48,17 +48,11 @@ describe('CategoryResolver', () => {
       color: CategoryColor.RED,
     })
 
-    vi.mocked(CategoryService).mockImplementation(
-      () => categoryServiceMock as unknown as CategoryService
+    resolver = new CategoryResolver(
+      categoryServiceMock as unknown as CategoryService,
+      transactionServiceMock as unknown as TransactionService,
+      userServiceMock as unknown as UserService
     )
-    vi.mocked(TransactionService).mockImplementation(
-      () => transactionServiceMock as unknown as TransactionService
-    )
-    vi.mocked(UserService).mockImplementation(
-      () => userServiceMock as unknown as UserService
-    )
-
-    resolver = new CategoryResolver()
   })
 
   it('should create a category', async () => {

@@ -1,5 +1,6 @@
 import { TransactionType } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { singleton } from 'tsyringe'
 import { prismaClient } from '../../prisma/prisma'
 import {
   CreateTransactionInput,
@@ -8,6 +9,7 @@ import {
 } from '../dtos/input/transaction.input'
 import { CategoryColor } from '../models/category.model'
 
+@singleton()
 export class TransactionService {
   async createTransaction(
     data: CreateTransactionInput,

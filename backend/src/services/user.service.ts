@@ -1,6 +1,8 @@
+import { singleton } from 'tsyringe'
 import { prismaClient } from '../../prisma/prisma'
 import { UpdateUserInput } from '../dtos/input/user.input'
 
+@singleton()
 export class UserService {
   async findUser(id: string) {
     const user = await prismaClient.user.findUnique({

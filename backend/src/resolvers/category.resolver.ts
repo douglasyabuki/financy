@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe'
 import {
   Arg,
   FieldResolver,
@@ -20,12 +21,15 @@ import { CategoryService } from '../services/category.service'
 import { TransactionService } from '../services/transaction.service'
 import { UserService } from '../services/user.service'
 
+@injectable()
 @Resolver(() => CategoryModel)
 @UseMiddleware(IsAuthenticated)
 export class CategoryResolver {
-  private categoryService = new CategoryService()
-  private transactionService = new TransactionService()
-  private userService = new UserService()
+  constructor(
+    private categoryService: CategoryService,
+    private transactionService: TransactionService,
+    private userService: UserService
+  ) {}
 
   @Mutation(() => CategoryModel)
   async createCategory(

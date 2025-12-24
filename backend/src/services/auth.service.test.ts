@@ -1,6 +1,8 @@
 import { Prisma, User } from '@prisma/client'
+import 'reflect-metadata'
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
+import { EmailService } from '../services/email.service'
 import { comparePassword, hashPassword } from '../utils/hash'
 import { AuthService } from './auth.service'
 
@@ -31,11 +33,18 @@ vi.mock('../utils/hash', () => ({
   comparePassword: vi.fn(),
 }))
 
+vi.mock('../services/email.service')
+
 describe('AuthService', () => {
   let authService: AuthService
+  let emailServiceMock: EmailService
 
   beforeEach(() => {
-    authService = new AuthService()
+    process.env.JWT_SECRET = 'test-secret'
+    emailServiceMock = {
+      sendForgotPasswordEmail: vi.fn(),
+    } as unknown as EmailService
+    authService = new AuthService(emailServiceMock)
     vi.clearAllMocks()
   })
 

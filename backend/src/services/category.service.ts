@@ -1,3 +1,4 @@
+import { singleton } from 'tsyringe'
 import { prismaClient } from '../../prisma/prisma'
 import {
   CreateCategoryInput,
@@ -5,6 +6,7 @@ import {
 } from '../dtos/input/category.input'
 import { CategoryColor } from '../models/category.model'
 
+@singleton()
 export class CategoryService {
   async createCategory(data: CreateCategoryInput, userId: string) {
     const category = await prismaClient.category.create({

@@ -1,8 +1,10 @@
 import { Resend } from 'resend'
+import { singleton } from 'tsyringe'
 import { env } from '../env'
 
 const resend = new Resend(env.RESEND_API_KEY)
 
+@singleton()
 export class EmailService {
   generateEmailTemplate(content: string) {
     return `

@@ -1,4 +1,5 @@
 import { Category, Prisma } from '@prisma/client'
+import 'reflect-metadata'
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { CategoryColor } from '../models/category.model'
