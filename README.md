@@ -4,7 +4,7 @@ Financy is a full-stack personal finance organization application designed to he
 
 ## 🎨 Design
 
-The user interface is based on the **Financy** design system available on Figma:
+The user interface is based on:
 [**View Figma Design**](https://www.figma.com/community/file/1580994817007013257/financy)
 
 ## 🏗️ Tech Stack
