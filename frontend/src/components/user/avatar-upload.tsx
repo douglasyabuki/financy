@@ -50,9 +50,8 @@ export const AvatarUpload = ({
 
   const handleTrashClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (previewUrl && previewUrl !== currentAvatarUrl) {
-      handleRemove();
-    } else {
+    handleRemove();
+    if (currentAvatarUrl) {
       onAvatarRemove();
     }
   };

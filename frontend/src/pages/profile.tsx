@@ -20,6 +20,7 @@ export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const { user, updateProfile, logout } = useAuthStore((state) => state);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isAvatarRemoved, setIsAvatarRemoved] = useState(false);
 
   const {
     register,
@@ -31,17 +32,15 @@ export const Profile = () => {
     },
   });
 
-  const handleRemoveAvatar = async () => {
-    setLoading(true);
-    try {
-      const success = await updateProfile({ removeAvatar: true });
-      if (success) {
-        toast.success("Foto removida com sucesso!");
-      }
-    } catch (error) {
-      toast.error("Erro ao remover foto!");
-    } finally {
-      setLoading(false);
+  const handleRemoveAvatar = () => {
+    setIsAvatarRemoved(true);
+    setAvatarFile(null);
+  };
+
+  const handleFileSelect = (file: File | null) => {
+    setAvatarFile(file);
+    if (file) {
+      setIsAvatarRemoved(false);
     }
   };
 
@@ -52,10 +51,12 @@ export const Profile = () => {
       const updateProfileMutate = await updateProfile({
         name: data.name,
         avatar: avatarFile || undefined,
+        removeAvatar: isAvatarRemoved,
       });
       if (updateProfileMutate) {
         toast.success("Perfil atualizado com sucesso!");
         setAvatarFile(null); // Reset file selection after success
+        setIsAvatarRemoved(false);
       }
     } catch (error) {
       toast.error("Erro ao atualizar perfil!");
@@ -70,7 +71,7 @@ export const Profile = () => {
         <AvatarUpload
           name={user?.name || ""}
           currentAvatarUrl={user?.avatarUrl}
-          onFileSelect={setAvatarFile}
+          onFileSelect={handleFileSelect}
           onAvatarRemove={handleRemoveAvatar}
           isLoading={loading}
         />
