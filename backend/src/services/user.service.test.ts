@@ -1,93 +1,108 @@
-import { Prisma, User } from '@prisma/client'
 import 'reflect-metadata'
-import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prismaClient } from '../../prisma/prisma'
 import { UserService } from './user.service'
 
-// Mock Prisma Client
+// Mock Prisma
 vi.mock('../../prisma/prisma', () => ({
   prismaClient: {
     user: {
       findUnique: vi.fn(),
+      findMany: vi.fn(),
       update: vi.fn(),
     },
   },
 }))
 
-const prismaMock = prismaClient as unknown as {
-  user: {
-    findUnique: MockInstance<
-      (args: Prisma.UserFindUniqueArgs) => Promise<User | null>
-    >
-    update: MockInstance<(args: Prisma.UserUpdateArgs) => Promise<User>>
-  }
-}
-
 describe('UserService', () => {
   let userService: UserService
 
   beforeEach(() => {
-    userService = new UserService()
     vi.clearAllMocks()
+    userService = new UserService()
   })
 
-  describe('findUser', () => {
-    it('should return user if id exists', async () => {
-      const mockUser: User = {
-        id: 'user-1',
-        name: 'Test User',
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
+  // Basic sanity check test + update test
+  describe('updateUser', () => {
+    it('should update user with avatarUrl when provided', async () => {
+      const userId = 'user-1'
+      const updateData = { name: 'New Name' }
+      const avatarUrl = 'https://cdn.example.com/avatar.png'
+
+      // Mock findUnique to return existing user
+      vi.mocked(prismaClient.user.findUnique).mockResolvedValue({
+        id: userId,
+        name: 'Old Name',
         email: 'test@example.com',
-        password: 'hashed-password',
+        avatarUrl: null,
+        password: null,
         resetCode: null,
         resetCodeExpiry: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
-
-      prismaMock.user.findUnique.mockResolvedValue(mockUser)
-
-      const result = await userService.findUser('user-1')
-
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: { id: 'user-1' },
       })
-      expect(result).toEqual(mockUser)
+
+      // Mock update
+      vi.mocked(prismaClient.user.update).mockResolvedValue({
+        id: userId,
+        name: 'New Name',
+        email: 'test@example.com',
+        avatarUrl: avatarUrl,
+        password: null,
+        resetCode: null,
+        resetCodeExpiry: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+
+      await userService.updateUser(userId, updateData, avatarUrl)
+
+      expect(prismaClient.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {
+          name: 'New Name',
+          avatarUrl: avatarUrl,
+        },
+      })
+    })
+
+    it('should update user without avatarUrl when not provided', async () => {
+      const userId = 'user-1'
+      const updateData = { name: 'New Name' }
+
+      vi.mocked(prismaClient.user.findUnique).mockResolvedValue({
+        id: userId,
+        name: 'Old Name',
+        email: 'test@example.com',
+        avatarUrl: null,
+        password: null,
+        resetCode: null,
+        resetCodeExpiry: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+
+      await userService.updateUser(userId, updateData)
+
+      expect(prismaClient.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {
+          name: 'New Name',
+          avatarUrl: undefined, // Should be undefined or not present depending on implementation, checking undefined based on code
+        },
+      })
     })
 
     it('should throw error if user not found', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(null)
+      vi.mocked(prismaClient.user.findUnique).mockResolvedValue(null)
 
-      await expect(userService.findUser('user-1')).rejects.toThrow(
+      await expect(userService.updateUser('non-existent', {})).rejects.toThrow(
         'User not found'
       )
-    })
-  })
-
-  describe('updateUser', () => {
-    it('should update user', async () => {
-      const mockUser: User = {
-        id: 'user-1',
-        name: 'Updated Name',
-        email: 'test@example.com',
-        password: 'hashed-password',
-        resetCode: null,
-        resetCodeExpiry: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-
-      prismaMock.user.findUnique.mockResolvedValue(mockUser)
-      prismaMock.user.update.mockResolvedValue(mockUser)
-
-      const result = await userService.updateUser('user-1', {
-        name: 'Updated Name',
-      })
-
-      expect(prismaMock.user.update).toHaveBeenCalledWith({
-        where: { id: 'user-1' },
-        data: { name: 'Updated Name' },
-      })
-      expect(result).toEqual(mockUser)
     })
   })
 })

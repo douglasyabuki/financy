@@ -18,7 +18,7 @@ export class UserService {
     return prismaClient.user.findMany()
   }
 
-  async updateUser(id: string, data: UpdateUserInput) {
+  async updateUser(id: string, data: UpdateUserInput, avatarUrl?: string) {
     const user = await prismaClient.user.findUnique({
       where: { id },
     })
@@ -28,6 +28,7 @@ export class UserService {
       where: { id },
       data: {
         name: data.name ?? undefined,
+        avatarUrl: avatarUrl ?? undefined,
       },
     })
   }
