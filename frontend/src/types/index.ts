@@ -6,6 +6,7 @@ export interface User {
   email: string;
   createdAt?: string;
   updatedAt?: string;
+  avatarUrl?: string;
 }
 
 export interface RegisterInput {
@@ -20,7 +21,8 @@ export interface LoginInput {
 }
 
 export interface UpdateProfileInput {
-  name: string;
+  name?: string;
+  avatar?: File;
 }
 
 export type TransactionType = "INCOME" | "EXPENSE";
