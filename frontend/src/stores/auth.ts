@@ -172,6 +172,7 @@ export const useAuthStore = create<AuthState>()(
                 email: user.email,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
+                avatarUrl: user.avatarUrl,
               },
               token,
               refreshToken,
@@ -213,6 +214,7 @@ export const useAuthStore = create<AuthState>()(
                 email: user.email,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
+                avatarUrl: user.avatarUrl,
               },
               token,
               refreshToken,
@@ -234,12 +236,14 @@ export const useAuthStore = create<AuthState>()(
           }
           const { data } = await client.mutate<
             UpdateProfileMutationData,
-            { data: { name: string } }
+            { data: { name?: string; avatar?: File; removeAvatar?: boolean } }
           >({
             mutation: UPDATE_PROFILE,
             variables: {
               data: {
                 name: profileData.name,
+                avatar: profileData.avatar,
+                removeAvatar: profileData.removeAvatar,
               },
             },
           });
@@ -251,6 +255,7 @@ export const useAuthStore = create<AuthState>()(
                     ...state.user,
                     name: user.name,
                     updatedAt: user.updatedAt,
+                    avatarUrl: user.avatarUrl,
                   }
                 : null,
             }));
