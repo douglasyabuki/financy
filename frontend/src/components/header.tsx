@@ -4,7 +4,7 @@ import { getInitials } from "@/utils/initials";
 import { NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { useAuthStore } from "../stores/auth";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface HeaderLink {
   to: string;
@@ -49,6 +49,9 @@ export const Header = () => {
         <div className="flex flex-1 justify-end">
           <NavLink to="/profile">
             <Avatar className="size-9">
+              {user?.avatarUrl && (
+                <AvatarImage src={user.avatarUrl} alt={user.name} />
+              )}
               <AvatarFallback className="bg-gray-300 text-sm leading-5 tracking-normal text-gray-800">
                 {getInitials(user?.name)}
               </AvatarFallback>
