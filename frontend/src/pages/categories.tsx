@@ -102,7 +102,7 @@ export const Categories = () => {
               description="CATEGORIA MAIS USADA"
             />
           </div>
-          <div className="flex flex-wrap justify-around gap-6 xl:grid xl:grid-cols-4 xl:gap-0 xl:space-y-4 xl:space-x-4">
+          <div className="flex flex-wrap justify-around gap-6 xl:grid xl:grid-cols-4 xl:gap-4">
             {categories.map((category) => {
               return (
                 <CategoryCard
