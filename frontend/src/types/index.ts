@@ -23,6 +23,7 @@ export interface LoginInput {
 export interface UpdateProfileInput {
   name?: string;
   avatar?: File;
+  removeAvatar?: boolean;
 }
 
 export type TransactionType = "INCOME" | "EXPENSE";

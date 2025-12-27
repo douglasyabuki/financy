@@ -236,13 +236,14 @@ export const useAuthStore = create<AuthState>()(
           }
           const { data } = await client.mutate<
             UpdateProfileMutationData,
-            { data: { name?: string; avatar?: File } }
+            { data: { name?: string; avatar?: File; removeAvatar?: boolean } }
           >({
             mutation: UPDATE_PROFILE,
             variables: {
               data: {
                 name: profileData.name,
                 avatar: profileData.avatar,
+                removeAvatar: profileData.removeAvatar,
               },
             },
           });

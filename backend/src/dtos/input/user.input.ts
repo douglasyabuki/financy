@@ -17,4 +17,7 @@ export class UpdateUserInput {
 
   @Field(() => GraphQLUpload, { nullable: true })
   avatar?: Promise<FileUpload>
+
+  @Field(() => Boolean, { nullable: true })
+  removeAvatar?: boolean
 }

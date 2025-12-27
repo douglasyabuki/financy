@@ -31,6 +31,20 @@ export const Profile = () => {
     },
   });
 
+  const handleRemoveAvatar = async () => {
+    setLoading(true);
+    try {
+      const success = await updateProfile({ removeAvatar: true });
+      if (success) {
+        toast.success("Foto removida com sucesso!");
+      }
+    } catch (error) {
+      toast.error("Erro ao remover foto!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onSubmit = async (data: { name: string }) => {
     setLoading(true);
 
@@ -57,6 +71,7 @@ export const Profile = () => {
           name={user?.name || ""}
           currentAvatarUrl={user?.avatarUrl}
           onFileSelect={setAvatarFile}
+          onAvatarRemove={handleRemoveAvatar}
           isLoading={loading}
         />
         <span>

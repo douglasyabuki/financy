@@ -37,9 +37,11 @@ export class UserResolver {
   ): Promise<UpdateProfileOutput> {
     if (!user) throw new Error('User not authenticated')
 
-    let avatarUrl: string | undefined
+    let avatarUrl: string | null | undefined
 
-    if (data.avatar) {
+    if (data.removeAvatar) {
+      avatarUrl = null
+    } else if (data.avatar) {
       const file = await data.avatar
       avatarUrl = await this.storageService.uploadFile(file)
     }
@@ -49,6 +51,7 @@ export class UserResolver {
       data,
       avatarUrl
     )
+
     return { user: updatedUser }
   }
 }

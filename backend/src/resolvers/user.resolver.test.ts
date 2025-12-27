@@ -96,6 +96,27 @@ describe('UserResolver', () => {
     expect(result.user.avatarUrl).toBe(avatarUrl)
   })
 
+  it('should remove avatar when removeAvatar is true', async () => {
+    const input: UpdateUserInput = {
+      name: 'Profile Name',
+      removeAvatar: true,
+    }
+
+    userServiceMock.updateUser.mockResolvedValue({
+      ...mockUser,
+      avatarUrl: null,
+    })
+
+    const result = await resolver.updateProfile(mockUser, input)
+
+    expect(userServiceMock.updateUser).toHaveBeenCalledWith(
+      mockUser.id,
+      input,
+      null
+    )
+    expect(result.user.avatarUrl).toBeNull()
+  })
+
   it('should throw error if user not authenticated for updateProfile', async () => {
     const input: UpdateUserInput = { name: 'Profile Name' }
     await expect(resolver.updateProfile(null, input)).rejects.toThrow(
