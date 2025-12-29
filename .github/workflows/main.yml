@@ -117,6 +117,7 @@ jobs:
           severity: CRITICAL,HIGH
 
       - name: Build & Push Image to DockerHub
+        if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v6
         with:
           context: ./backend
