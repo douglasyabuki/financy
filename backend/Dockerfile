@@ -29,7 +29,7 @@ RUN npm run build
 # Remove dev dependencies
 RUN npm prune --prod
 
-FROM gcr.io/distroless/nodejs22-debian12 AS deploy
+FROM base AS deploy
 
 WORKDIR /usr/src/app
 
@@ -41,4 +41,4 @@ COPY --from=build /usr/src/app/prisma ./prisma
 
 EXPOSE 4000
 
-CMD ["dist/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
