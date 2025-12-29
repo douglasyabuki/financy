@@ -6,13 +6,13 @@ const resend = new Resend(env.RESEND_API_KEY)
 
 @singleton()
 export class EmailService {
-  generateEmailTemplate(content: string) {
+  generateEmailTemplate(title: string, content: string) {
     return `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reset Password</title>
+          <title>${title}</title>
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -29,6 +29,7 @@ export class EmailService {
       to: email,
       subject: 'Reset Password',
       html: this.generateEmailTemplate(
+        'Reset Password',
         `<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%;     background-color: #f9fafb;">
           <tr>
             <td align="center" style="padding: 40px 0;">
