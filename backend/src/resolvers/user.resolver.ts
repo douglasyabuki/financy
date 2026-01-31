@@ -5,13 +5,17 @@ import { UpdateProfileOutput } from '../dtos/output/user.output'
 import { GraphqlUser } from '../graphql/decorators/user.decorator'
 import { IsAuthenticated } from '../middlewares/auth.middleware'
 import { UserModel } from '../models/user.model'
+import { StorageService } from '../services/storage.service'
 import { UserService } from '../services/user.service'
 
 @injectable()
 @Resolver(() => UserModel)
 @UseMiddleware(IsAuthenticated)
 export class UserResolver {
-  constructor(@inject(UserService) private userService: UserService) {}
+  constructor(
+    @inject(UserService) private userService: UserService,
+    @inject(StorageService) private storageService: StorageService
+  ) {}
 
   @Query(() => UserModel)
   async getUser(@Arg('id', () => String) id: string): Promise<UserModel> {
@@ -32,7 +36,22 @@ export class UserResolver {
     @Arg('data', () => UpdateUserInput) data: UpdateUserInput
   ): Promise<UpdateProfileOutput> {
     if (!user) throw new Error('User not authenticated')
-    const updatedUser = await this.userService.updateUser(user.id, data)
+
+    let avatarUrl: string | null | undefined
+
+    if (data.removeAvatar) {
+      avatarUrl = null
+    } else if (data.avatar) {
+      const file = await data.avatar
+      avatarUrl = await this.storageService.uploadFile(file)
+    }
+
+    const updatedUser = await this.userService.updateUser(
+      user.id,
+      data,
+      avatarUrl
+    )
+
     return { user: updatedUser }
   }
 }

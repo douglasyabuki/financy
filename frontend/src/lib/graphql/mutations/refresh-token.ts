@@ -11,6 +11,7 @@ export const REFRESH_TOKEN = gql`
         email
         createdAt
         updatedAt
+        avatarUrl
       }
     }
   }

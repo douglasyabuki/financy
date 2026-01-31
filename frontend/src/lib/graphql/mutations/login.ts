@@ -11,6 +11,7 @@ export const LOGIN = gql`
         email
         createdAt
         updatedAt
+        avatarUrl
       }
     }
   }

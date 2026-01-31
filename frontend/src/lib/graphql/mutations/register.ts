@@ -11,6 +11,7 @@ export const REGISTER = gql`
         email
         createdAt
         updatedAt
+        avatarUrl
       }
     }
   }
