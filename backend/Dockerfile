@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install ALL dependencies (including dev) to run build and prisma generate
-RUN npm install
+RUN npm ci
 
 FROM base AS build
 

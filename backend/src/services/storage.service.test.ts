@@ -31,7 +31,7 @@ describe('StorageService', () => {
     vi.clearAllMocks()
 
     // Mock Upload implementation
-    vi.mocked(Upload).mockImplementation(() => {
+    vi.mocked(Upload).mockImplementation(function () {
       return {
         done: uploadDoneMock.mockResolvedValue({}),
         on: vi.fn(),
