@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Divider } from "@/components/ui/divider";
@@ -9,9 +8,9 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
+import { AvatarUpload } from "@/components/user/avatar-upload";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth";
-import { getInitials } from "@/utils/initials";
 import { LogOut, Mail, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,6 +19,8 @@ import { toast } from "sonner";
 export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const { user, updateProfile, logout } = useAuthStore((state) => state);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isAvatarRemoved, setIsAvatarRemoved] = useState(false);
 
   const {
     register,
@@ -31,15 +32,31 @@ export const Profile = () => {
     },
   });
 
+  const handleRemoveAvatar = () => {
+    setIsAvatarRemoved(true);
+    setAvatarFile(null);
+  };
+
+  const handleFileSelect = (file: File | null) => {
+    setAvatarFile(file);
+    if (file) {
+      setIsAvatarRemoved(false);
+    }
+  };
+
   const onSubmit = async (data: { name: string }) => {
     setLoading(true);
 
     try {
       const updateProfileMutate = await updateProfile({
         name: data.name,
+        avatar: avatarFile || undefined,
+        removeAvatar: isAvatarRemoved,
       });
       if (updateProfileMutate) {
         toast.success("Perfil atualizado com sucesso!");
+        setAvatarFile(null); // Reset file selection after success
+        setIsAvatarRemoved(false);
       }
     } catch (error) {
       toast.error("Erro ao atualizar perfil!");
@@ -51,11 +68,13 @@ export const Profile = () => {
   return (
     <Card className="flex w-full max-w-md flex-col gap-8 rounded-xl p-8">
       <CardHeader className="flex flex-col items-center gap-6 text-center">
-        <Avatar className="size-18">
-          <AvatarFallback className="bg-gray-300 text-[1.75rem] leading-10 font-medium tracking-normal text-gray-800">
-            {getInitials(user?.name)}
-          </AvatarFallback>
-        </Avatar>
+        <AvatarUpload
+          name={user?.name || ""}
+          currentAvatarUrl={user?.avatarUrl}
+          onFileSelect={handleFileSelect}
+          onAvatarRemove={handleRemoveAvatar}
+          isLoading={loading}
+        />
         <span>
           <h2 className="text-xl leading-7 font-semibold tracking-normal text-gray-800">
             {user?.name}

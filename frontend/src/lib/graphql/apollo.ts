@@ -3,15 +3,15 @@ import { useAuthStore } from "@/stores/auth";
 import {
   ApolloClient,
   ApolloLink,
-  HttpLink,
   InMemoryCache,
   Observable,
 } from "@apollo/client";
 import { SetContextLink } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { GraphQLError } from "graphql";
+import { createUploadLink } from "./upload-link";
 
-const httpLink = new HttpLink({
+const uploadLink = createUploadLink({
   uri: env.VITE_BACKEND_URL,
 });
 
@@ -81,7 +81,7 @@ const authLink = new SetContextLink((prevContext) => {
 });
 
 export const apolloClient = new ApolloClient({
-  link: ApolloLink.from([errorLink, authLink, httpLink]),
+  link: ApolloLink.from([errorLink, authLink, uploadLink]),
   cache: new InMemoryCache(),
 });
 

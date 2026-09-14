@@ -177,10 +177,16 @@ input UpdateTransactionInput {
 }
 
 input UpdateUserInput {
+  avatar: Upload
   name: String
+  removeAvatar: Boolean
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 type UserModel {
+  avatarUrl: String
   categories: [CategoryModel!]
   createdAt: DateTimeISO!
   email: String!
